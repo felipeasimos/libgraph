@@ -1,9 +1,9 @@
-.PHONY: tests lib debug build run compile_flags docs clean help
+.PHONY: test lib debug build run compile_flags docs init clean help
 help:
 	# This Makefile can produce a dynamic library, test binary
 	# and main executable for C/C++ projects.
 
-	# The only prerequisite is that you must have this project structure
+	# The only prerequisite is that you must have this project structure:
 	# myproject/
 	# ├── Makefile
 	# ├── main.c (optional)
@@ -12,12 +12,14 @@ help:
 	# └── tests/ (can contain one level of subfolders)
 
 	# the available commands in this Makefile are:
-	# tests - build and run tests with debug flags and debugger
+	# test - build and run tests with debug flags and debugger
 	# lib - build dynamic lib for release
 	# debug - build and run main executable (if you have one) with debug flags and debugger
 	# build - build main executable for release (if you have one)
 	# run - build and run main executable for release (if you have one)
 	# compile_flags - generate compile_flags.txt file for clangd lsp
+	# docs - generate documentation
+	# init - create minimal project structure in current folder (src/, tests/, include/)
 	# clean - remove build/ (folder where targets are stored)
 	# help - show this help
 
@@ -39,7 +41,7 @@ DOCUMENTATION_COMMAND :=doxygen Doxyfile
 TARGET :=graph
 
 # debugger command to run when debugging (you can leave it empty)
-DEBUGGER_COMMAND :=
+DEBUGGER_COMMAND := valgrind --leak-check=full --exit-on-first-error=yes --error-exitcode=1
 
 # code coverage command to use (you can leave it empty)
 CODE_COVERAGE_COMMAND :=
@@ -61,7 +63,7 @@ TESTS_LIBS_LOCATION :=
 # additional headers location
 GENERAL_HEADERS_LOCATION :=
 MAIN_HEADERS_LOCATION :=
-TESTS_HEADERS_LOCATION :=
+TESTS_HEADERS_LOCATION :=./tests
 
 # ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^
 # compilation variables to be set per project
@@ -110,7 +112,7 @@ MAIN_LIBS_LOCATION :=$(addprefix -L,$(MAIN_LIBS_LOCATION)) $(GENERAL_LIBS_LOCATI
 TESTS_LIBS_LOCATION :=$(addprefix -L,$(TESTS_LIBS)) $(GENERAL_LIBS_LOCATION)
 
 # add -I to header directories
-GENERAL_HEADERS_LOCATION :=$(addprefix -I,$(GENERAL_HEADERS_LOCATION))
+GENERAL_HEADERS_LOCATION :=$(addprefix -I,$(GENERAL_HEADERS_LOCATION)) $(addprefix -I,$(INCLUDE_DIR))
 MAIN_HEADERS_LOCATION :=$(addprefix -I,$(MAIN_HEADERS_LOCATION)) $(GENERAL_HEADERS_LOCATION)
 TESTS_HEADERS_LOCATION :=$(addprefix -I,$(TESTS_HEADERS_LOCATION)) $(GENERAL_HEADERS_LOCATION)
 
@@ -119,15 +121,17 @@ folders:
 	@mkdir -p $(OBJ_DIR)
 	@mkdir -p $(MAIN_DIR)
 	@mkdir -p $(LIB_DIR)
+	@mkdir -p $(OBJ_DIR)
 
 # build objects
+$(SRC_OBJS): folders
 $(SRC_OBJS): $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-	$(COMPILER) $(FLAGS) $(GENERAL_HEADERS_LOCATION) $< -o $@ $(GENERAL_LIBS_LOCATION) $(GENERAL_LIBS)
+	$(COMPILER) $(FLAGS) $(GENERAL_HEADERS_LOCATION) $< -c -o $@ $(GENERAL_LIBS_LOCATION) $(GENERAL_LIBS)
 
 # build tests objects
 $(TESTS_OBJS): $(SRC_OBJS)
 $(TESTS_OBJS): $(TESTS_OBJ_DIR)/%.o: $(TESTS_SRC_DIR)/%.c
-	$(COMPILER) $(FLAGS) $(TESTS_HEADERS_LOCATION) $< -o $@ $(TESTS_LIBS_LOCATION) $(TESTS_LIBS)
+	$(COMPILER) $(FLAGS) $(TESTS_HEADERS_LOCATION) $< -c -o $@ $(TESTS_LIBS_LOCATION) $(TESTS_LIBS)
 
 # build lib
 $(TARGET_LIB): $(SRC_OBJS)
@@ -135,24 +139,21 @@ $(TARGET_LIB): $(SRC_OBJS)
 
 # build tests executable
 $(TARGET_TESTS): $(TESTS_OBJS)
-	$(COMPILER) $(FLAGS) $(TESTS_HEADERS_LOCATION) $^ -o $@
+	$(COMPILER) $(FLAGS) $(TESTS_HEADERS_LOCATION) $(SRC_OBJS) $^ -o $@
 
 # build main
 $(TARGET_MAIN): $(SRC_OBJS) $(MAIN_SRC)
-	$(COMPILER) $(FLAGS) $(MAIN_HEADERS_LOCATION) $(MAIN_SRC) $^ -o $@
+	$(COMPILER) $(FLAGS) $(MAIN_HEADERS_LOCATION) $(MAIN_SRC) $^ -o $@ $(MAIN_LIBS_LOCATION) $(MAIN_LIBS)
 
 # main commands
-lib: clean
 lib: FLAGS+=$(RELEASE_FLAGS)
 lib: $(SRC_OBJS)
 	$(COMPILER) $(FLAGS) $(GENERAL_HEADERS_LOCATION) $^ -shared -o $(TARGET_LIB)
 
-tests: clean
-tests: FLAGS+=$(DEBUG_FLAGS)
-tests: $(TESTS_OBJS) $(TARGET_TESTS)
+test: FLAGS+=$(DEBUG_FLAGS)
+test: $(TESTS_OBJS) $(TARGET_TESTS)
 	$(DEBUGGER_COMMAND) $(TARGET_TESTS)
 
-debug: clean
 debug: FLAGS+=$(DEBUG_FLAGS)
 debug: $(SRC_OBJS) $(TARGET_MAIN)
 	$(DEBUGGER_COMMAND) $(TARGET_MAIN)
@@ -177,5 +178,9 @@ compile_flags:
 docs: 
 	$(DOCUMENTATION_COMMAND)
 
+init:
+	@mkdir -p $(INCLUDE_DIR)
+	@mkdir -p $(SRC_DIR)
+	@mkdir -p $(TESTS_SRC)
 clean:
 	@-rm -rf $(BUILD_DIR)

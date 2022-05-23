@@ -41,7 +41,7 @@ DOCUMENTATION_COMMAND :=doxygen Doxyfile
 TARGET :=graph
 
 # debugger command to run when debugging (you can leave it empty)
-DEBUGGER_COMMAND ?= valgrind --leak-check=full --exit-on-first-error=yes --error-exitcode=1
+DEBUGGER_COMMAND := valgrind --leak-check=full --exit-on-first-error=yes --error-exitcode=1
 
 # code coverage command to use (you can leave it empty)
 CODE_COVERAGE_COMMAND :=

@@ -10,3 +10,10 @@ Graph library for C. Features:
 * Algorithms like:
   * Topological ordering
   * Dijkstra shortest path
+
+## API notation
+
+* Struct initialization functions:
+  * Must have an argument for an address where the struct can be initialized at
+    * If NULL a struct will be dynamically allocated
+    * return the address of the struct, no matter if it was statically or dynamically allocated

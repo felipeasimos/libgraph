@@ -3,19 +3,15 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-void data_format_init(DATA_FORMAT* data_ptr) {
+DATA_FORMAT* data_format_init(DATA_FORMAT* data_ptr) {
+  data_ptr = data_ptr ? data_ptr : malloc(sizeof(DATA_FORMAT));
   data_ptr->constructor = default_constructor;
   data_ptr->update = default_update;
   data_ptr->destructor = default_destructor;
   data_ptr->debug = default_debug;
   data_ptr->print = default_print;
   data_ptr->cmp = default_cmp;
-}
-
-DATA_FORMAT* data_format_create() {
-  DATA_FORMAT* data_format = malloc(sizeof(DATA_FORMAT));
-  data_format_init(data_format);
-  return data_format;
+  return data_ptr;
 }
 
 void default_constructor(DATA* data, void* args) {

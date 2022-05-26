@@ -31,7 +31,7 @@ ctdd_test(test_node_init) {
 
 ctdd_test(test_node_create) {
 
-  NODE* node = node_create();
+  NODE* node = node_init(NULL);
   ctdd_check( node );
   free( node );
 }

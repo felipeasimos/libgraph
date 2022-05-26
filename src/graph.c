@@ -17,7 +17,7 @@ void graph_free(GRAPH* graph) {
   free(graph);
 }
 
-void _graph_init_node(GRAPH* graph, unsigned long idx) {
+void graph_init_node(GRAPH* graph, unsigned long idx) {
   NODE* node = graph->nodes[idx];
   node_init(graph->nodes[idx]);
   graph->format.constructor(&node->data, NULL);
@@ -25,20 +25,16 @@ void _graph_init_node(GRAPH* graph, unsigned long idx) {
   node->graph_idx = idx;
 }
 
-void graph_init(GRAPH* graph, unsigned long n, DATA_FORMAT* format) {
+GRAPH* graph_init(GRAPH* graph, unsigned long n, DATA_FORMAT* format) {
 
+  graph = graph ? graph : malloc(sizeof(GRAPH));
   memcpy(&graph->format, format, sizeof(DATA_FORMAT));
   graph->num_nodes = n;
   graph->nodes = calloc(graph->num_nodes, sizeof(NODE));
   graph->num_edges = 0;
   for(unsigned long i = 0; i < graph->num_nodes; i++) {
     graph->nodes[i] = malloc(sizeof(NODE));
-    _graph_init_node(graph, i);
+    graph_init_node(graph, i);
   }
-}
-
-GRAPH* graph_create(unsigned long n, DATA_FORMAT* format) {
-  GRAPH* graph = malloc(sizeof(GRAPH));
-  graph_init(graph, n, format);
   return graph;
 }

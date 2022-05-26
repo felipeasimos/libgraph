@@ -29,14 +29,6 @@ void graph_free(GRAPH* graph);
 //! @param[in] graph : pointer to graph struct
 //! @param[in] n : number of nodes in graph. Initially disconnected from one another
 //! @param[in] format : data format used by the graph. The struct this points to will be copied
-void graph_init(GRAPH* graph, unsigned long n, DATA_FORMAT* format);
-
-//! @relates GRAPH
-//! @brief Create and initialize graph struct with n nodes that accepts the given data format.
-//! @details Data constructors will be given the argument NULL
-//! @param[in] n : number of nodes in graph. Initially disconnected from one another
-//! @param[in] format : data format used by the graph. The struct this points to will be copied
-//! @return pointer to new graph struct
-GRAPH* graph_create(unsigned long n, DATA_FORMAT* format);
+GRAPH* graph_init(GRAPH* graph, unsigned long n, DATA_FORMAT* format);
 
 #endif

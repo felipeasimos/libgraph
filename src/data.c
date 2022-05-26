@@ -2,16 +2,11 @@
 #include "data_format.h"
 #include <stdlib.h>
 
-void data_init(DATA* data, void* ptr, unsigned long len) {
+DATA* data_init(DATA* data, void* ptr, unsigned long len) {
+  data = data ? data : malloc(sizeof(DATA));
   data->ptr = ptr;
   data->len = len;
   data->container = NULL;
-}
-
-DATA* data_create(void* ptr, unsigned long len) {
-
-  DATA* data = malloc(sizeof(DATA));
-  data_init(data, ptr, len);
   return data;
 }
 

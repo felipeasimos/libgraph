@@ -26,7 +26,8 @@ ctdd_test(test_graph_create) {
   unsigned long n = rand() % 20;
   DATA_FORMAT data_format;
   data_format_init(&data_format);
-  GRAPH* graph = graph_create(n, &data_format);
+  GRAPH* graph = NULL;
+  graph = graph_init(graph, n, &data_format);
   ctdd_check( graph );
   graph_free( graph );
 }

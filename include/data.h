@@ -17,16 +17,13 @@ typedef struct DATA {
 } DATA;
 
 //! @relates DATA
-//! @brief Initializes empty/garbage #DATA struct
+//! @brief Initializes data struct. If needed, it will allocate memory for one
+//! @param[in] data : data struct to initialize. If NULL is given, it will allocate one
 //! @param[in] ptr : Pointer to user data
 //! @param[in] len : Size of user data in bytes
-void data_init(DATA* data, void* ptr, unsigned long len);
-//! @relates DATA
-//! @brief Allocate memory and initialize #DATA struct with the given params.
-//! @param[in] ptr : Pointer to user data.
-//! @param[in] len : Size of user data in bytes.
-//! @return Pointer to initialized and allocated #DATA struct
-DATA* data_create(void* ptr, unsigned long len);
+//! @return pointer to data struct
+DATA* data_init(DATA* data, void* ptr, unsigned long len);
+
 //! @relates DATA
 //! @brief Allocate new memory space.
 //! @details This functions makes sure to call the destructor inside #DATA_FORMAT

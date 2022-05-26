@@ -10,12 +10,8 @@ void node_free(NODE* node, struct DATA_FORMAT* format) {
   free(node);
 }
 
-void node_init(NODE* node) {
+NODE* node_init(NODE* node) {
+  node = node ? node : malloc(sizeof(NODE));
   memset(node, 0x00, sizeof(NODE));
-}
-
-NODE* node_create() {
-  NODE* node = malloc(sizeof(NODE));
-  node_init(node);
   return node;
 }

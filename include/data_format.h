@@ -36,12 +36,7 @@ typedef struct DATA_FORMAT {
 //! @relates DATA_FORMAT
 //! @brief Initialize a #DATA_FORMAT struct with default values.
 //! @param[in] data_format_ptr : Pointer to uninitialized #DATA_FORMAT struct.
-void data_format_init(DATA_FORMAT* data_format_ptr);
-//! @relates DATA_FORMAT
-//! @brief Allocate memory for a #DATA_FORMAT struct and initialize
-//! it with #data_format_init.
-//! @return Pointer to initialized and allocated #DATA_FORMAT struct.
-DATA_FORMAT* data_format_create();
+DATA_FORMAT* data_format_init(DATA_FORMAT* data_format_ptr);
 
 void default_constructor(DATA* data, void* args);
 void default_update(DATA* data, void* args);

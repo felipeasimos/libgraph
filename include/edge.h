@@ -7,7 +7,8 @@ typedef struct EDGE {
 
   struct NODE* parent;
   struct NODE* node;
-  unsigned long node_idx;
+  struct EDGE* prev;
+  struct EDGE* next;
   struct DATA data;
 } EDGE;
 

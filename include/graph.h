@@ -41,7 +41,18 @@ struct NODE* graph_add_data(GRAPH* graph, void* args);
 //! @param[in] data : data to compare against
 struct NODE* graph_search_data(GRAPH* graph, DATA* data);
 
+//! @relates GRAPH
+//! @brief Returns node at index
+//! @details Returns NULL if there is no node at this idx
+//! @param[in] graph : graph struct
+//! @param[in] idx : index to return node from
+struct NODE* graph_get(GRAPH* graph, unsigned long idx);
+
+//! @relates GRAPH
+//! @brief print graph struct to stdout
+//! @param[in] graph : graph struct to print
 void graph_print(GRAPH* graph);
+
 void graph_debug(GRAPH* graph);
 char* graph_to_dot_str(GRAPH* graph);
 int graph_to_dot_file(GRAPH* graph, FILE* file);

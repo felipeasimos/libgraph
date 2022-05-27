@@ -1,5 +1,6 @@
 #include "graph.h"
 #include "node.h"
+#include "edge.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -53,4 +54,20 @@ struct NODE* graph_search_data(GRAPH* graph, DATA* data) {
     if( !graph->format.cmp(&node->data, data) ) return node;
   }
   return NULL;
+}
+
+struct NODE* graph_get(GRAPH* graph, unsigned long idx) {
+  return idx < graph->num_nodes ? graph->nodes[idx] : NULL;
+}
+
+void graph_print(GRAPH* graph) {
+  for(unsigned long i = 0; i < graph->num_nodes; i++) {
+    node_print(graph->nodes[i], &graph->format);
+    printf(" -> ");
+    for(EDGE* edge = graph->nodes[i]->out; edge; edge = edge->next) {
+      node_print(edge->node, &graph->format);
+      printf(" ");
+    }
+    printf("\n");
+  }
 }

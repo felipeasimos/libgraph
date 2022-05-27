@@ -1,8 +1,9 @@
 #include "node.h"
 #include "data_format.h"
 
-#include <string.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 void node_free(NODE* node, struct DATA_FORMAT* format) {
   format->destructor(&node->data);
@@ -18,4 +19,11 @@ NODE* node_init(NODE* node, void* args, struct DATA_FORMAT* format) {
   }
 
   return node;
+}
+
+void node_print(NODE* node, struct DATA_FORMAT* format) {
+
+  char* print_str = format->print(&node->data);
+  printf("%s", print_str);
+  free(print_str);
 }

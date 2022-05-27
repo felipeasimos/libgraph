@@ -81,8 +81,26 @@ ctdd_test(test_graph_search_data) {
   free(graph);
 }
 
+ctdd_test(test_graph_get) {
+  GRAPH* graph = graph_init(NULL, 0, NULL);
+  int max = 5 + rand() % 20;
+  long i;
+  for(i = 0; i < max; i++) {
+    graph_add_data(graph, (void*)i);
+  }
+  for(i = 0; i < max; i++) {
+    ctdd_check( graph_get(graph, i) == graph->nodes[i]);
+  }
+  for(; i < max<<1; i++) {
+    ctdd_check(!graph_get(graph, i));
+  }
+  graph_free(graph);
+  free( graph ); 
+}
+
 ctdd_test_suite(test_graph) {
   ctdd_run_test(test_graph_init);
   ctdd_run_test(test_graph_add_data);
   ctdd_run_test(test_graph_search_data);
+  ctdd_run_test(test_graph_get);
 }

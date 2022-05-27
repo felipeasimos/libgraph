@@ -31,4 +31,9 @@ void node_free(NODE* node, struct DATA_FORMAT* format);
 //! @param[in] format : data format being used
 NODE* node_init(NODE* node, void* args, struct DATA_FORMAT* format);
 
+//! @relates NODE
+//! @brief print node struct to stdout
+//! @param[in] node : node struct to print
+void node_print(NODE* node, struct DATA_FORMAT* format);
+
 #endif

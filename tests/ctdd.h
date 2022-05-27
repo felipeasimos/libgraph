@@ -85,7 +85,7 @@ static void test_suite()
       return 1;\
     } else {\
       unsigned long millisecs = __ctdd_get_suite_struct(test_suite)->suite_time_millisecs;\
-      fprintf(stdout, "Test suite \x1b[34m"#test_suite "\x1b[1;32m PASSED!\x1b[0m %lu.%lu secs\n", millisecs/1000, millisecs%1000);\
+      fprintf(stdout, "Test suite \x1b[34m"#test_suite "\x1b[1;32m PASSED!\x1b[0m %lu.%lu secs\n", millisecs/10000, millisecs%10000);\
     }\
   )
 
@@ -104,8 +104,8 @@ static void test_suite()
         "\taverage test time: %lu.%lu secs\n",\
       __ctdd_get_suite_struct(test_suite)->status == __ctdd_fail_code ? "\x1b[1;31m❌\x1b[0m" : "\x1b[1;32m✅\x1b[0m",\
       __ctdd_get_suite_struct(test_suite)->num_tests,\
-      millisecs/1000, millisecs%1000,\
-      avg_millisecs/1000, avg_millisecs%1000\
+      millisecs/10000, millisecs%10000,\
+      avg_millisecs/10000, avg_millisecs%10000\
       );\
   )
 // save results to csv

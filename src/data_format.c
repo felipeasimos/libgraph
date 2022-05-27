@@ -18,14 +18,13 @@ void default_constructor(DATA* data, void* args) {
 
   if(!args) return;
   data->len = sizeof(int);
-  data->ptr = malloc(data->len);
-  *(int*)data->ptr = *(int*)args;
+  *(int*)&data->ptr = *(int*)args;
 }
 
 void default_update(DATA* data, void* args) {
 
   data->len = sizeof(int);
-  *(int*)data->ptr = *(int*)args;
+  *(int*)&data->ptr = *(int*)args;
 }
 
 void default_destructor(DATA* data) {
@@ -35,19 +34,19 @@ void default_destructor(DATA* data) {
 
 char* default_debug(DATA* data) {
   char* debug_str = malloc(sizeof(char) * 50);
-  snprintf(debug_str, 50, "[%d](%p)", *(int*)data->ptr, data->ptr);
+  snprintf(debug_str, 50, "[%d](%p)", *(int*)&data->ptr, data->ptr);
   return debug_str;
 }
 
 char* default_print(DATA* data) {
   char* print_str = malloc(sizeof(char) * 15);
-  sprintf(print_str, "%d", *(int*)data->ptr);
+  sprintf(print_str, "%d", *(int*)&data->ptr);
   return print_str;
 }
 
 int default_cmp(DATA* a, DATA* b) {
-  int a_data = *(int*)a->ptr;
-  int b_data = *(int*)b->ptr;
+  int a_data = *(int*)&a->ptr;
+  int b_data = *(int*)&b->ptr;
   if(a_data < b_data) {
     return 1;
   } else if(a_data > b_data) {

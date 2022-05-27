@@ -14,11 +14,6 @@ typedef struct GRAPH {
 } GRAPH;
 
 //! @relates GRAPH
-//! @brief Free graph fields properly
-//! @param[in] graph : graph struct with fields to free
-void graph_free_fields(GRAPH* graph);
-
-//! @relates GRAPH
 //! @brief Free graph structure and all its fields properly
 //! @param[in] graph : graph struct to free
 void graph_free(GRAPH* graph);
@@ -30,5 +25,11 @@ void graph_free(GRAPH* graph);
 //! @param[in] n : number of nodes in graph. Initially disconnected from one another
 //! @param[in] format : data format used by the graph. The struct this points to will be copied
 GRAPH* graph_init(GRAPH* graph, unsigned long n, DATA_FORMAT* format);
+
+//! @relates GRAPH
+//! @brief Add new node to graph using constructor arguments
+//! @param[in] graph : pointer to graph struct
+//! @param[in] node : node struct to add
+void graph_add_data(GRAPH* graph, void* args);
 
 #endif

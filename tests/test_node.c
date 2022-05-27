@@ -17,11 +17,12 @@ ctdd_test(test_node_init) {
     .num_in_edges = 4,
     .num_info = 6
   };
-  node_init(&node);
+  int args = 1337;
+  node_init(&node, &args, NULL);
   ctdd_check( !node.graph );
   ctdd_check( !node.graph_idx );
-  ctdd_check( !node.data.len );
-  ctdd_check( !node.data.ptr );
+  ctdd_check( node.data.len == sizeof(int) );
+  ctdd_check( *(int*)&node.data.ptr == args );
   ctdd_check( !node.in );
   ctdd_check( !node.out );
   ctdd_check( !node.num_out_edges );
@@ -29,14 +30,6 @@ ctdd_test(test_node_init) {
   ctdd_check( !node.num_info );
 }
 
-ctdd_test(test_node_create) {
-
-  NODE* node = node_init(NULL);
-  ctdd_check( node );
-  free( node );
-}
-
 ctdd_test_suite(test_node) {
   ctdd_run_test(test_node_init);
-  ctdd_run_test(test_node_create);
 }

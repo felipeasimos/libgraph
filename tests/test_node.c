@@ -17,12 +17,12 @@ ctdd_test(test_node_init) {
     .num_in_edges = 4,
     .num_info = 6
   };
-  int args = 1337;
-  node_init(&node, &args, NULL);
+  long arg = 1337;
+  node_init(&node, (void*)arg, NULL);
   ctdd_check( !node.graph );
   ctdd_check( !node.graph_idx );
-  ctdd_check( node.data.len == sizeof(int) );
-  ctdd_check( *(int*)&node.data.ptr == args );
+  ctdd_check( node.data.len == sizeof(long) );
+  ctdd_check( node.data.ptr == (void*)arg );
   ctdd_check( !node.in );
   ctdd_check( !node.out );
   ctdd_check( !node.num_out_edges );

@@ -13,10 +13,10 @@ void graph_free(GRAPH* graph) {
   free(graph->nodes);
 }
 
-void graph_init_node(GRAPH* graph, unsigned long idx) {
+void graph_init_node(GRAPH* graph, unsigned long idx, void* args) {
   NODE* node = node_init(NULL, NULL, &graph->format);
   graph->nodes[idx] = node;
-  graph->format.constructor(&node->data, NULL);
+  graph->format.constructor(&node->data, args);
   node->graph = graph;
   node->graph_idx = idx;
 }
@@ -33,13 +33,24 @@ GRAPH* graph_init(GRAPH* graph, unsigned long n, DATA_FORMAT* format) {
   graph->nodes = calloc(graph->num_nodes, sizeof(NODE*));
   graph->num_edges = 0;
   for(unsigned long i = 0; i < graph->num_nodes; i++) {
-    graph_init_node(graph, i);
+    graph_init_node(graph, i, NULL);
   }
   return graph;
 }
 
-void graph_add_data(GRAPH* graph, void* args) {
+NODE* graph_add_data(GRAPH* graph, void* args) {
 
   graph->nodes = realloc(graph->nodes, sizeof(NODE*) * ++graph->num_nodes);
-  graph->nodes[graph->num_nodes-1] = node_init(NULL, args, &graph->format);
+  graph_init_node(graph, graph->num_nodes-1, args);
+  return graph->nodes[graph->num_nodes-1];
+}
+
+struct NODE* graph_search_data(GRAPH* graph, DATA* data) {
+
+  for(unsigned long i = 0; i < graph->num_nodes; i++) {
+
+    NODE* node = graph->nodes[i];
+    if( !graph->format.cmp(&node->data, data) ) return node;
+  }
+  return NULL;
 }

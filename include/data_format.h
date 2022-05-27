@@ -7,7 +7,7 @@
 //! #DATA structs.
 //! @details Mind that default implementations will
 //! be used for NULL function pointers. These default implementations
-//! use the data pointer as an integer (as it being the data itself) \a int.
+//! use the data pointer as an long integer (as it being the data itself) \a long.
 typedef struct DATA_FORMAT {
   //! @brief Initialize an address containing space for a #DATA struct.
   //! @details Mind that this function uses \a void* so the user

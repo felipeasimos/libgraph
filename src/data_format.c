@@ -16,15 +16,14 @@ DATA_FORMAT* data_format_init(DATA_FORMAT* data_ptr) {
 
 void default_constructor(DATA* data, void* args) {
 
-  if(!args) return;
-  data->len = sizeof(int);
-  *(int*)&data->ptr = *(int*)args;
+  data->len = sizeof(long);
+  *(long*)&data->ptr = *(long*)&args;
 }
 
 void default_update(DATA* data, void* args) {
 
-  data->len = sizeof(int);
-  *(int*)&data->ptr = *(int*)args;
+  data->len = sizeof(long);
+  *(long*)&data->ptr = *(long*)&args;
 }
 
 void default_destructor(DATA* data) {
@@ -34,19 +33,19 @@ void default_destructor(DATA* data) {
 
 char* default_debug(DATA* data) {
   char* debug_str = malloc(sizeof(char) * 50);
-  snprintf(debug_str, 50, "[%d](%p)", *(int*)&data->ptr, data->ptr);
+  snprintf(debug_str, 50, "[%ld](%p)", *(long*)&data->ptr, (void*)data);
   return debug_str;
 }
 
 char* default_print(DATA* data) {
   char* print_str = malloc(sizeof(char) * 15);
-  sprintf(print_str, "%d", *(int*)&data->ptr);
+  sprintf(print_str, "%ld", *(long*)&data->ptr);
   return print_str;
 }
 
 int default_cmp(DATA* a, DATA* b) {
-  int a_data = *(int*)&a->ptr;
-  int b_data = *(int*)&b->ptr;
+  long a_data = *(long*)&a->ptr;
+  long b_data = *(long*)&b->ptr;
   if(a_data < b_data) {
     return 1;
   } else if(a_data > b_data) {

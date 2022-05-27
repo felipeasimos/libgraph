@@ -41,10 +41,42 @@ ctdd_test(test_graph_init) {
 ctdd_test(test_graph_add_data) {
 
   GRAPH* graph = graph_init(NULL, 4, NULL);
-  int i = 1337;
-  graph_add_data(graph, &i);
+  long i = 1337;
+  NODE* node = graph_add_data(graph, (void*)i);
   ctdd_check( graph->num_nodes == 5 );
-  ctdd_check( *(int*)&graph->nodes[graph->num_nodes-1]->data.ptr == 1337 );
+  ctdd_check( graph->nodes[4] == node );
+  ctdd_check( node->graph_idx == 4);
+  ctdd_check( graph->nodes[graph->num_nodes-1]->data.ptr == (void*)i );
+
+  graph_free(graph);
+  free(graph);
+}
+
+ctdd_test(test_graph_search_data) {
+  GRAPH* graph = graph_init(NULL, 0, NULL);
+  int max = 5 + rand() % 20;
+  long i = 0;
+  for(; i < max; i++ ) {
+    graph_add_data(graph, (void*)i);
+    ctdd_check( graph->nodes[graph->num_nodes-1]->graph_idx == (unsigned long)i);
+    ctdd_check( graph->nodes[graph->num_nodes-1]->data.ptr == (void*)i);
+    ctdd_check( graph->nodes[graph->num_nodes-1]->data.len == sizeof(long) );
+  }
+  ctdd_check( graph->num_nodes == (unsigned long)max );
+  DATA data;
+  graph->format.constructor(&data, (void*)i);
+  ctdd_check( data.ptr == (void*)i);
+  ctdd_check( !graph_search_data(graph, &data) );
+  for(i = 0; i < max; i++) {
+    graph->format.update(&data, (void*)i);
+    ctdd_check( data.ptr == (void*)i );
+    NODE* result = graph_search_data(graph, &data);
+    ctdd_check( result );
+    ctdd_check( result->graph_idx == (unsigned long)i);
+    ctdd_check( result->data.len == sizeof(long) );
+    ctdd_check( result->data.ptr == data.ptr );
+    ctdd_check( graph->nodes[result->graph_idx] == result);
+  }
   graph_free(graph);
   free(graph);
 }
@@ -52,4 +84,5 @@ ctdd_test(test_graph_add_data) {
 ctdd_test_suite(test_graph) {
   ctdd_run_test(test_graph_init);
   ctdd_run_test(test_graph_add_data);
+  ctdd_run_test(test_graph_search_data);
 }

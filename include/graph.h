@@ -29,7 +29,23 @@ GRAPH* graph_init(GRAPH* graph, unsigned long n, DATA_FORMAT* format);
 //! @relates GRAPH
 //! @brief Add new node to graph using constructor arguments
 //! @param[in] graph : pointer to graph struct
-//! @param[in] node : node struct to add
-void graph_add_data(GRAPH* graph, void* args);
+//! @param[in] args : argument to construct new data
+//! @return pointer to new node struct
+struct NODE* graph_add_data(GRAPH* graph, void* args);
+
+//! @relates GRAPH
+//! @brief Return struct where node.data == data
+//! @details Will return NULL in case no node is found.
+//! Match where format->cmp(data, node.data) == 0 will be returned
+//! @param[in] graph : graph struct
+//! @param[in] data : data to compare against
+struct NODE* graph_search_data(GRAPH* graph, DATA* data);
+
+void graph_print(GRAPH* graph);
+void graph_debug(GRAPH* graph);
+char* graph_to_dot_str(GRAPH* graph);
+int graph_to_dot_file(GRAPH* graph, FILE* file);
+GRAPH* graph_from_dot_str(GRAPH* graph, char* dot_str);
+GRAPH* graph_from_dot_file(GRAPH* graph, FILE* file);
 
 #endif

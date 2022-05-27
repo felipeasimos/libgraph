@@ -143,7 +143,7 @@ $(TARGET_TESTS): $(TESTS_OBJS)
 
 # build main
 $(TARGET_MAIN): $(SRC_OBJS) $(MAIN_SRC)
-	$(COMPILER) $(FLAGS) $(MAIN_HEADERS_LOCATION) $(MAIN_SRC) $^ -o $@ $(MAIN_LIBS_LOCATION) $(MAIN_LIBS)
+	$(COMPILER) $(FLAGS) $(MAIN_HEADERS_LOCATION) $^ -o $@ $(MAIN_LIBS_LOCATION) $(MAIN_LIBS)
 
 # main commands
 lib: FLAGS+=$(RELEASE_FLAGS)
@@ -162,9 +162,7 @@ build: clean
 build: FLAGS+=$(RELEASE_FLAGS)
 build: $(SRC_OBJS) $(TARGET_MAIN)
 
-run: clean
-run: FLAGS+=$(RELEASE_FLAGS)
-run: $(SRC_OBJS) $(TARGET_MAIN)
+run: clean build
 	$(TARGET_MAIN)
 
 compile_flags:

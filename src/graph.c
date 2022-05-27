@@ -63,7 +63,7 @@ struct NODE* graph_get(GRAPH* graph, unsigned long idx) {
 void graph_print(GRAPH* graph) {
   for(unsigned long i = 0; i < graph->num_nodes; i++) {
     node_print(graph->nodes[i], &graph->format);
-    printf(" -> ");
+    if(graph->nodes[i]->out) printf(" -> ");
     for(EDGE* edge = graph->nodes[i]->out; edge; edge = edge->next) {
       node_print(edge->node, &graph->format);
       printf(" ");

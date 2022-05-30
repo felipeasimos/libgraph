@@ -71,3 +71,21 @@ void graph_print(GRAPH* graph) {
     printf("\n");
   }
 }
+
+void graph_debug(GRAPH* graph) {
+  for(unsigned long i = 0; i < graph->num_nodes; i++) {
+    node_debug(graph->nodes[i], &graph->format);
+    if(graph->nodes[i]->out) printf(" -> ");
+    for(EDGE* edge = graph->nodes[i]->out; edge; edge = edge->next) {
+      node_debug(edge->node, &graph->format);
+      printf(" ");
+    }
+    printf("\n");
+  }
+}
+
+int graph_oriented_connect_nodes(struct NODE* a, struct NODE* b, void* args) {
+  if(a->graph != b->graph || !a->graph) return 0;
+  node_connect_to(a, b, args);
+  return 1;
+}

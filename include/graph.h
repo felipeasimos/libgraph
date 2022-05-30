@@ -53,7 +53,20 @@ struct NODE* graph_get(GRAPH* graph, unsigned long idx);
 //! @param[in] graph : graph struct to print
 void graph_print(GRAPH* graph);
 
+//! @relates GRAPH
+//! @brief print graph struct in debug form
+//! @param[in] graph : graph struct to debug
 void graph_debug(GRAPH* graph);
+
+//! @relates GRAPH
+//! @brief create a new edge connecting \a a to \a b
+//! @details fails if the nodes aren't in the same graph
+//! @param[in] a : node to connect from
+//! @param[in] b : node to connect to
+//! @param[in] args : argument to construct edge data
+//! @return return 1 if connection is successful. Return 0 otherwise
+int graph_oriented_connect_nodes(struct NODE* a, struct NODE* b, void* args);
+
 char* graph_to_dot_str(GRAPH* graph);
 int graph_to_dot_file(GRAPH* graph, FILE* file);
 GRAPH* graph_from_dot_str(GRAPH* graph, char* dot_str);

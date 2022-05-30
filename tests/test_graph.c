@@ -2,6 +2,7 @@
 #include "graph.h"
 #include "data_format.h"
 #include "node.h"
+#include "edge.h"
 
 #include <stdlib.h>
 
@@ -98,9 +99,45 @@ ctdd_test(test_graph_get) {
   free( graph ); 
 }
 
+ctdd_test(test_graph_oriented_connect_nodes) {
+  GRAPH* graph = graph_init(NULL, 0, NULL);
+  int max = 5 + rand() % 20;
+  long i;
+  for( i = 0; i < max; i++ ) {
+    graph_add_data(graph, (void*)i);
+  }
+  ctdd_check( graph_oriented_connect_nodes(
+      graph_get(graph, 0),
+      graph_get(graph, 1),
+      (void*)2) );
+  ctdd_check( graph_oriented_connect_nodes(
+      graph_get(graph, 2),
+      graph_get(graph, 4),
+      (void*)5) );
+  ctdd_check( graph_get(graph, 0)->out->node == graph_get(graph, 1));
+  ctdd_check( graph_get(graph, 1)->in->node == graph_get(graph, 0));
+  ctdd_check( graph_get(graph, 0)->num_out_edges == 1 );
+  ctdd_check( graph_get(graph, 0)->num_in_edges == 0 );
+  ctdd_check( graph_get(graph, 1)->num_in_edges == 1 );
+  ctdd_check( graph_get(graph, 1)->num_out_edges == 0 );
+  ctdd_check( graph->nodes[0]->out->data.ptr == (void*)2);
+
+  ctdd_check( graph_get(graph, 2)->out->node == graph_get(graph, 4));
+  ctdd_check( graph_get(graph, 4)->in->node == graph_get(graph, 2));
+  ctdd_check( graph_get(graph, 2)->num_out_edges == 1 );
+  ctdd_check( graph_get(graph, 2)->num_in_edges == 0 );
+  ctdd_check( graph_get(graph, 4)->num_in_edges == 1 );
+  ctdd_check( graph_get(graph, 4)->num_out_edges == 0 );
+  ctdd_check( graph->nodes[2]->out->data.ptr == (void*)5);
+
+  graph_free( graph );
+  free( graph );
+}
+
 ctdd_test_suite(test_graph) {
   ctdd_run_test(test_graph_init);
   ctdd_run_test(test_graph_add_data);
   ctdd_run_test(test_graph_search_data);
   ctdd_run_test(test_graph_get);
+  ctdd_run_test(test_graph_oriented_connect_nodes);
 }

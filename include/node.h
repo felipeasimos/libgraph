@@ -36,4 +36,17 @@ NODE* node_init(NODE* node, void* args, struct DATA_FORMAT* format);
 //! @param[in] node : node struct to print
 void node_print(NODE* node, struct DATA_FORMAT* format);
 
+//! @relates NODE
+//! @brief print node struct to stdout in debug format
+//! @param[in] node : node struct to print in debug format
+void node_debug(NODE* node, struct DATA_FORMAT* format);
+
+//! @relates NODE
+//! @brief connect NODE a to NODE b
+//! @details the data format of the graph of each node will be used to create its respective edge struct
+//! @param[in] a : node to connect from
+//! @param[in] b : node to connect to
+//! @param[in] args : argument to pass to the edge's data constructor
+void node_connect_to(NODE* a, NODE* b, void* args);
+
 #endif

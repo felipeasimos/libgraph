@@ -12,10 +12,16 @@ typedef struct NODE {
   struct GRAPH* graph;
   unsigned long graph_idx;
 
-  struct EDGE* in;
-  struct EDGE* out;
   unsigned long num_out_edges;
   unsigned long num_in_edges;
+  unsigned long num_bi_edges;
+  /*
+  struct EDGE* in;
+  struct EDGE* out;
+  struct EDGE* bi;
+  struct EDGE* bi_ref;
+  */
+  struct EDGE* edges[4];
 } NODE;
 
 //! @relates NODE
@@ -42,11 +48,50 @@ void node_print(NODE* node, struct DATA_FORMAT* format);
 void node_debug(NODE* node, struct DATA_FORMAT* format);
 
 //! @relates NODE
-//! @brief connect NODE a to NODE b
+//! @brief connect NODE a to NODE b with a one-way edge
 //! @details the data format of the graph of each node will be used to create its respective edge struct
 //! @param[in] a : node to connect from
 //! @param[in] b : node to connect to
 //! @param[in] args : argument to pass to the edge's data constructor
 void node_connect_to(NODE* a, NODE* b, void* args);
+
+//! @relates NODE
+//! @brief connect NODE a to NODE with a bidirectional edge
+//! @details the data format of the graph of each node will be used to create its respective edge struct
+//! @param[in] a : node to connect
+//! @param[in] b : node to connect
+//! @param[in] args : argument to pass to the edge's data constructor
+void node_connect(NODE* a, NODE* b, void* args);
+
+#define NODE_GET_ROOT(node, type, var)\
+    switch(type) {\
+      case BI:\
+        var = node->bi;\
+        break;\
+      case BI_REF:\
+        var = node->bi_ref;\
+        break;\
+      case IN:\
+        var = node->in;\
+        break;\
+      case OUT:\
+        var = node->out;\
+        break;\
+    }
+#define NODE_SET_ROOT(node, type, var)\
+    switch(type) {\
+      case BI:\
+        node->bi = var;\
+        break;\
+      case BI_REF:\
+        node->bi_ref = var;\
+        break;\
+      case IN:\
+        node->in = var;\
+        break;\
+      case OUT:\
+        node->out = var;\
+        break;\
+    }
 
 #endif

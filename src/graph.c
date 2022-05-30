@@ -63,8 +63,8 @@ struct NODE* graph_get(GRAPH* graph, unsigned long idx) {
 void graph_print(GRAPH* graph) {
   for(unsigned long i = 0; i < graph->num_nodes; i++) {
     node_print(graph->nodes[i], &graph->format);
-    if(graph->nodes[i]->out) printf(" -> ");
-    for(EDGE* edge = graph->nodes[i]->out; edge; edge = edge->next) {
+    if(graph->nodes[i]->edges[OUT]) printf(" -> ");
+    for(EDGE* edge = graph->nodes[i]->edges[OUT]; edge; edge = edge->next) {
       node_print(edge->node, &graph->format);
       printf(" ");
     }
@@ -75,8 +75,8 @@ void graph_print(GRAPH* graph) {
 void graph_debug(GRAPH* graph) {
   for(unsigned long i = 0; i < graph->num_nodes; i++) {
     node_debug(graph->nodes[i], &graph->format);
-    if(graph->nodes[i]->out) printf(" -> ");
-    for(EDGE* edge = graph->nodes[i]->out; edge; edge = edge->next) {
+    if(graph->nodes[i]->edges[OUT]) printf(" -> ");
+    for(EDGE* edge = graph->nodes[i]->edges[OUT]; edge; edge = edge->next) {
       node_debug(edge->node, &graph->format);
       printf(" ");
     }
@@ -89,3 +89,10 @@ int graph_oriented_connect_nodes(struct NODE* a, struct NODE* b, void* args) {
   node_connect_to(a, b, args);
   return 1;
 }
+
+int graph_connect_nodes(struct NODE* a, struct NODE* b, void* args) {
+  if(a->graph != b->graph || !a->graph) return 0;
+  node_connect(a, b, args);
+  return 1;
+}
+

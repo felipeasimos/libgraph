@@ -2,6 +2,7 @@
 #define GRAPH_H
 
 #include "data_format.h"
+#include "edge.h"
 
 #include <stdio.h>
 
@@ -59,13 +60,31 @@ void graph_print(GRAPH* graph);
 void graph_debug(GRAPH* graph);
 
 //! @relates GRAPH
-//! @brief create a new edge connecting \a a to \a b
+//! @brief create a new one-way edge connecting \a a to \a b
 //! @details fails if the nodes aren't in the same graph
 //! @param[in] a : node to connect from
 //! @param[in] b : node to connect to
 //! @param[in] args : argument to construct edge data
 //! @return return 1 if connection is successful. Return 0 otherwise
 int graph_oriented_connect_nodes(struct NODE* a, struct NODE* b, void* args);
+
+//! @relates GRAPH
+//! @brief create a new bidirectional edge connecting \a a to \a b
+//! @details fails if the nodes aren't in the same graph
+//! @param[in] a : node to connect
+//! @param[in] b : node to connect
+//! @param[in] args : argument to construct edge data
+//! @return return 1 if connection is successful. Return 0 otherwise
+int graph_connect_nodes(struct NODE* a, struct NODE* b, void* args);
+
+//! @relates GRAPH
+//! @brief search for a connection of the given type from a to b
+//! @param[in] a : node to connect
+//! @param[in] b : node to connect
+//! @param[in] type : connection type
+//! @return return a edge struct with this connection type
+//! (conforming to the order of arguments if oriented) and 
+EDGE* graph_get_one_edge(struct NODE* a, struct NODE* b, enum EDGE_TYPE type);
 
 char* graph_to_dot_str(GRAPH* graph);
 int graph_to_dot_file(GRAPH* graph, FILE* file);

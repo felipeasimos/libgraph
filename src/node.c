@@ -9,11 +9,19 @@
 
 void node_free(NODE* node, struct DATA_FORMAT* format) {
   format->destructor(&node->data);
-  for(EDGE* edge = node->out; edge; edge = node->out) {
+  for(EDGE* edge = node->edges[OUT]; edge; edge = node->edges[OUT]) {
     edge_free( edge, format );
     free( edge );
   }
-  for(EDGE* edge = node->in; edge; edge = node->in) {
+  for(EDGE* edge = node->edges[IN]; edge; edge = node->edges[IN]) {
+    edge_free( edge, format );
+    free( edge );
+  }
+  for(EDGE* edge = node->edges[BI]; edge; edge = node->edges[BI]) {
+    edge_free( edge, format );
+    free( edge );
+  }
+  for(EDGE* edge = node->edges[BI_REF]; edge; edge = node->edges[BI_REF]) {
     edge_free( edge, format );
     free( edge );
   }
@@ -45,13 +53,32 @@ void node_debug(NODE* node, struct DATA_FORMAT* format) {
 
 void node_connect_to(NODE* a, NODE* b, void* args) {
 
-  a->out = edge_append(a->out, args, &a->graph->format);
-  a->out->node = b;
-  a->out->parent = a;
+  EDGE* edge = NULL;
+  a->edges[OUT] = edge_append(a->edges[OUT], OUT, args, &a->graph->format);
+  edge = a->edges[OUT]->next ? a->edges[OUT]->next : a->edges[OUT];
+  edge->node = b;
+  edge->parent = a;
   a->num_out_edges++;
 
-  b->in = edge_append(b->in, args, &b->graph->format);
-  b->in->node = a;
-  b->in->parent = b;
+  b->edges[IN] = edge_append(b->edges[IN], IN, edge, &b->graph->format);
+  edge = b->edges[IN]->next ? b->edges[IN]->next : b->edges[IN];
+  edge->node = a;
+  edge->parent = b;
   b->num_in_edges++;
+}
+
+void node_connect(NODE* a, NODE* b, void* args) {
+
+  EDGE* edge = NULL;
+  a->edges[BI] = edge_append(a->edges[BI], BI, args, &a->graph->format);
+  edge = a->edges[BI]->next ? a->edges[BI]->next : a->edges[BI];
+  edge->node = b;
+  edge->parent = a;
+  a->num_bi_edges++;
+
+  b->edges[BI_REF] = edge_append(b->edges[BI_REF], BI_REF, edge, &b->graph->format);
+  edge = b->edges[BI_REF]->next ? b->edges[BI_REF]->next : b->edges[BI_REF];
+  edge->node = a;
+  edge->parent = b;
+  b->num_bi_edges++;
 }

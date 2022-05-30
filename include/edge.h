@@ -3,8 +3,19 @@
 
 #include "data.h"
 
+//! @relates EDGE
+enum EDGE_TYPE {
+  //! @brief hold the main data
+  IN=0,
+  //! @brief hold reference to IN edge
+  OUT=1,
+  BI=2,
+  BI_REF=3
+};
+
 typedef struct EDGE {
 
+  enum EDGE_TYPE type;
   struct NODE* parent;
   struct NODE* node;
   struct EDGE* prev;
@@ -23,7 +34,7 @@ void edge_free(EDGE* edge, struct DATA_FORMAT* format);
 //! @param[in] edge : pointer to edge struct
 //! @param[in] args : argument for the data constructor
 //! @param[in] format : data format being used
-EDGE* edge_init(EDGE* edge, void* args, struct DATA_FORMAT* format);
+EDGE* edge_init(EDGE* edge, enum EDGE_TYPE type, void* args, struct DATA_FORMAT* format);
 
 //! @relates EDGE
 //! @brief append new edge struct as 'next'
@@ -32,6 +43,6 @@ EDGE* edge_init(EDGE* edge, void* args, struct DATA_FORMAT* format);
 //! @param[in] args : argument for the data constructor
 //! @param[in] format : data format being used
 //! @return return new edge, be it one appended to an old one or not
-EDGE* edge_append(EDGE* edge, void* args, struct DATA_FORMAT* format);
+EDGE* edge_append(EDGE* edge, enum EDGE_TYPE type, void* args, struct DATA_FORMAT* format);
 
 #endif

@@ -96,3 +96,105 @@ int graph_connect_nodes(struct NODE* a, struct NODE* b, void* args) {
   return 1;
 }
 
+EDGE* graph_get_one_edge(struct NODE* a, struct NODE* b, enum EDGE_TYPE type) {
+
+  for(EDGE* edge = a->edges[type]; edge; edge = edge->next) {
+    if(edge->node == b) return edge;
+  }
+  return NULL;
+}
+
+EDGE** graph_get_edges(struct NODE* a, struct NODE* b, enum EDGE_TYPE type, unsigned long* num_edges) {
+
+  EDGE** edges = NULL;
+  *num_edges = 0;
+
+  for(EDGE* edge = a->edges[type]; edge; edge = edge->next) {
+    if(edge->node == b) {
+      edges = realloc(edges, (*num_edges)++);
+      edges[(*num_edges)-1] = edge;
+    }
+  }
+  return edges;
+}
+
+int graph_to_dot_file(GRAPH* graph, FILE* file) {
+
+  fprintf(file, "digraph G {\n");
+  for(unsigned long i = 0; i < graph->num_nodes; i++) {
+
+    NODE* parent = graph->nodes[i];
+    char* parent_identifier = graph->format.print(&parent->data);
+    if(!parent->edges[OUT] && !parent->edges[BI]) {
+      if(!fprintf(file, "\t\"%s\";\n", parent_identifier)) {
+        free(parent_identifier);
+        return 0;
+      }
+    }
+    for(EDGE* edge = parent->edges[OUT]; edge; edge = edge->next) {
+
+      NODE* node = edge->node;
+      char* node_identifier = graph->format.print(&node->data);
+      char* edge_identifier = graph->format.print(&edge->data);
+      int res = fprintf(file, "\t\"%s\" -> \"%s\" [dir=\"forward\", label=\"%s\"];\n",
+          parent_identifier,
+          node_identifier,
+          edge_identifier
+          );
+      free(node_identifier);
+      free(edge_identifier);
+      if(!res) {
+        free(parent_identifier);
+        return 0;
+      }
+    }
+    for(EDGE* edge = parent->edges[BI]; edge; edge = edge->next) {
+
+      NODE* node = edge->node;
+      char* node_identifier = graph->format.print(&node->data);
+      char* edge_identifier = graph->format.print(&edge->data);
+      int res = fprintf(file, "\t\"%s\" -> \"%s\" [dir=\"none\", label=\"%s\"];\n",
+          parent_identifier,
+          node_identifier,
+          edge_identifier
+          );
+      free(node_identifier);
+      free(edge_identifier);
+      if(!res) {
+        free(parent_identifier);
+        return 0;
+      }
+    }
+    free(parent_identifier);
+  }
+  fprintf(file, "}");
+  return 1;
+}
+
+int graph_oriented_disconnect_nodes(struct NODE* a, struct NODE* b) {
+
+  EDGE* in_edge = NULL;
+  for(in_edge = b->edges[IN]; in_edge && in_edge->node != a; in_edge = in_edge->next);
+
+  if(!in_edge) return 0;
+  EDGE* out_edge = in_edge->data.ptr;
+  edge_free(out_edge, &a->graph->format);
+  edge_free(in_edge, &b->graph->format);
+  free(out_edge);
+  free(in_edge);
+  return 1;
+}
+
+int graph_disconnect_nodes(struct NODE* a, struct NODE* b) {
+
+  EDGE* bi_ref_edge = NULL;
+  for(bi_ref_edge = b->edges[BI_REF]; bi_ref_edge && bi_ref_edge->node != a; bi_ref_edge = bi_ref_edge->next);
+
+  if(!bi_ref_edge) return 0;
+  EDGE* bi_edge = bi_ref_edge->data.ptr;
+  edge_free(bi_edge, &a->graph->format);
+  edge_free(bi_ref_edge, &b->graph->format);
+  free(bi_ref_edge);
+  free(bi_edge);
+  return 1;
+}

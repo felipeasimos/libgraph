@@ -9,7 +9,6 @@ Graph library for C. Features:
 * Conversion from and back `.dot` files.
 * Algorithms like:
   * Topological ordering
-  * Dijkstra shortest path
 
 ## API notation
 

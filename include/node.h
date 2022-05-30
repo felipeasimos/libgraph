@@ -63,35 +63,4 @@ void node_connect_to(NODE* a, NODE* b, void* args);
 //! @param[in] args : argument to pass to the edge's data constructor
 void node_connect(NODE* a, NODE* b, void* args);
 
-#define NODE_GET_ROOT(node, type, var)\
-    switch(type) {\
-      case BI:\
-        var = node->bi;\
-        break;\
-      case BI_REF:\
-        var = node->bi_ref;\
-        break;\
-      case IN:\
-        var = node->in;\
-        break;\
-      case OUT:\
-        var = node->out;\
-        break;\
-    }
-#define NODE_SET_ROOT(node, type, var)\
-    switch(type) {\
-      case BI:\
-        node->bi = var;\
-        break;\
-      case BI_REF:\
-        node->bi_ref = var;\
-        break;\
-      case IN:\
-        node->in = var;\
-        break;\
-      case OUT:\
-        node->out = var;\
-        break;\
-    }
-
 #endif

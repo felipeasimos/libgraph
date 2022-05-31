@@ -23,6 +23,7 @@ Graph library for C. Features:
 * Struct destructor functions (`*_free`):
   * Don't deallocate struct itself
     * User must call `free(struct_ptr)` himself
+    * Exception: edge struct
 
 * Memory layout
   * edges are stored in a linked list pointed by the node struct

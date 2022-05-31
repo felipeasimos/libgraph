@@ -17,7 +17,7 @@ typedef struct EDGE {
 
   enum EDGE_TYPE type;
   struct NODE* parent;
-  struct NODE* node;
+  struct EDGE* mirror;
   struct EDGE* prev;
   struct EDGE* next;
   struct DATA data;

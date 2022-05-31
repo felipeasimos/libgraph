@@ -7,6 +7,7 @@
 
 void edge_free(EDGE* edge, DATA_FORMAT* format) {
 
+  // only types that actually carry data
   if(edge->type == OUT || edge->type == BI) {
     format->destructor(&edge->data);
   }
@@ -23,7 +24,12 @@ void edge_free(EDGE* edge, DATA_FORMAT* format) {
     if(edge->parent->edges[edge->type] == edge) {
       edge->parent->edges[edge->type] = edge->next;
     }
+    // set parent to NULL (to flag that this edge is not part of a connection chain anymore)
+    edge->parent = NULL;
+    // if mirror has parent still, free it
+    if(edge->mirror && edge->mirror->parent) edge_free(edge->mirror, format);
   }
+  free(edge);
 }
 
 EDGE* edge_init(EDGE* edge, enum EDGE_TYPE type, void* args, struct DATA_FORMAT* format) {
@@ -35,7 +41,7 @@ EDGE* edge_init(EDGE* edge, enum EDGE_TYPE type, void* args, struct DATA_FORMAT*
   switch(type) {
     case BI_REF:
     case IN: {
-      edge->data.ptr = args;
+      edge->data.ptr = NULL;
       break;
     };
     case BI:

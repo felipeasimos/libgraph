@@ -87,6 +87,17 @@ int graph_connect_nodes(struct NODE* a, struct NODE* b, void* args);
 EDGE* graph_get_one_edge(struct NODE* a, struct NODE* b, enum EDGE_TYPE type);
 
 //! @relates GRAPH
+//! @brief get a dynamic allocated array of connections between a and b
+//! @details similar to #graph_get_one_edge but will return all the connections from a to b
+//! @param[in] a : node to connect
+//! @param[in] b : node to connect
+//! @param[in] type : connection type
+//! @param[out] num_edges : number of edges in array
+//! @return dynamically allocated array of connections between a and b
+//! @details array must be freed afterwards by user
+EDGE** graph_get_edges(struct NODE* a, struct NODE* b, enum EDGE_TYPE type, unsigned long* num_edges);
+
+//! @relates GRAPH
 //! @brief removes oriented connection from a to b
 //! @param[in] a : origin node
 //! @param[in] b : destination node
@@ -101,15 +112,10 @@ int graph_oriented_disconnect_nodes(struct NODE* a, struct NODE* b);
 int graph_disconnect_nodes(struct NODE* a, struct NODE* b);
 
 //! @relates GRAPH
-//! @brief get a dynamic allocated array of connections between a and b
-//! @details similar to #graph_get_one_edge but will return all the connections from a to b
-//! @param[in] a : node to connect
-//! @param[in] b : node to connect
-//! @param[in] type : connection type
-//! @param[out] num_edges : number of edges in array
-//! @return dynamically allocated array of connections between a and b
-//! @details array must be freed afterwards by user
-EDGE** graph_get_edges(struct NODE* a, struct NODE* b, enum EDGE_TYPE type, unsigned long* num_edges);
+//! @brief removes node from graph
+//! @param[in] a : node to remove
+//! @return 1 on success, 0 on fail
+void graph_remove_node(struct NODE* a);
 
 //! @relates GRAPH
 //! @brief write graph representation in the DOT language to file
@@ -118,10 +124,7 @@ EDGE** graph_get_edges(struct NODE* a, struct NODE* b, enum EDGE_TYPE type, unsi
 //! @return 1 if operation was successful, otherwise 0
 int graph_to_dot_file(GRAPH* graph, FILE* file);
 
+GRAPH* graph_from_dot_file(GRAPH* graph, FILE* file);
 void graph_topological_sort(GRAPH* graph, struct NODE* source, struct NODE* sink);
-
-//! @relates GRAPH
-//! @brief reads from file to initialize graph struct
-// GRAPH* graph_from_dot_file(GRAPH* graph, FILE* file);
 
 #endif

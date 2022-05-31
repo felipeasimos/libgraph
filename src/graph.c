@@ -65,7 +65,7 @@ void graph_print(GRAPH* graph) {
     node_print(graph->nodes[i], &graph->format);
     if(graph->nodes[i]->edges[OUT]) printf(" -> ");
     for(EDGE* edge = graph->nodes[i]->edges[OUT]; edge; edge = edge->next) {
-      node_print(edge->node, &graph->format);
+      node_print(edge->mirror->parent, &graph->format);
       printf(" ");
     }
     printf("\n");
@@ -77,7 +77,7 @@ void graph_debug(GRAPH* graph) {
     node_debug(graph->nodes[i], &graph->format);
     if(graph->nodes[i]->edges[OUT]) printf(" -> ");
     for(EDGE* edge = graph->nodes[i]->edges[OUT]; edge; edge = edge->next) {
-      node_debug(edge->node, &graph->format);
+      node_debug(edge->mirror->parent, &graph->format);
       printf(" ");
     }
     printf("\n");
@@ -99,7 +99,7 @@ int graph_connect_nodes(struct NODE* a, struct NODE* b, void* args) {
 EDGE* graph_get_one_edge(struct NODE* a, struct NODE* b, enum EDGE_TYPE type) {
 
   for(EDGE* edge = a->edges[type]; edge; edge = edge->next) {
-    if(edge->node == b) return edge;
+    if(edge->mirror->parent == b) return edge;
   }
   return NULL;
 }
@@ -110,12 +110,43 @@ EDGE** graph_get_edges(struct NODE* a, struct NODE* b, enum EDGE_TYPE type, unsi
   *num_edges = 0;
 
   for(EDGE* edge = a->edges[type]; edge; edge = edge->next) {
-    if(edge->node == b) {
+    if(edge->mirror->parent == b) {
       edges = realloc(edges, (*num_edges)++);
       edges[(*num_edges)-1] = edge;
     }
   }
   return edges;
+}
+
+int graph_oriented_disconnect_nodes(struct NODE* a, struct NODE* b) {
+
+  EDGE* out_edge = NULL;
+  for(out_edge = a->edges[OUT]; out_edge && out_edge->mirror->parent != b; out_edge = out_edge->next);
+  if(!out_edge) return 0;
+  edge_free(out_edge, &a->graph->format);
+  return 1;
+}
+
+int graph_disconnect_nodes(struct NODE* a, struct NODE* b) {
+
+  EDGE* bi_edge = NULL;
+  for(bi_edge = a->edges[BI]; bi_edge && bi_edge->mirror->parent != b; bi_edge = bi_edge->next);
+  if(!bi_edge) return 0;
+  edge_free(bi_edge, &a->graph->format);
+  return 1;
+}
+
+void graph_remove_node(struct NODE* a) {
+
+  GRAPH* graph = a->graph;
+
+  for(unsigned idx = a->graph_idx+1; idx < graph->num_nodes; idx++) {
+    graph->nodes[idx-1] = graph->nodes[idx];
+    graph->nodes[idx-1]->graph_idx = idx-1;
+  }
+  node_free(a, &graph->format);
+  graph->nodes = realloc(graph->nodes, sizeof(NODE*) * (--graph->num_nodes));
+  free(a);
 }
 
 int graph_to_dot_file(GRAPH* graph, FILE* file) {
@@ -133,7 +164,7 @@ int graph_to_dot_file(GRAPH* graph, FILE* file) {
     }
     for(EDGE* edge = parent->edges[OUT]; edge; edge = edge->next) {
 
-      NODE* node = edge->node;
+      NODE* node = edge->mirror->parent;
       char* node_identifier = graph->format.print(&node->data);
       char* edge_identifier = graph->format.print(&edge->data);
       int res = fprintf(file, "\t\"%s\" -> \"%s\" [dir=\"forward\", label=\"%s\"];\n",
@@ -150,7 +181,7 @@ int graph_to_dot_file(GRAPH* graph, FILE* file) {
     }
     for(EDGE* edge = parent->edges[BI]; edge; edge = edge->next) {
 
-      NODE* node = edge->node;
+      NODE* node = edge->mirror->parent;
       char* node_identifier = graph->format.print(&node->data);
       char* edge_identifier = graph->format.print(&edge->data);
       int res = fprintf(file, "\t\"%s\" -> \"%s\" [dir=\"none\", label=\"%s\"];\n",
@@ -171,30 +202,3 @@ int graph_to_dot_file(GRAPH* graph, FILE* file) {
   return 1;
 }
 
-int graph_oriented_disconnect_nodes(struct NODE* a, struct NODE* b) {
-
-  EDGE* in_edge = NULL;
-  for(in_edge = b->edges[IN]; in_edge && in_edge->node != a; in_edge = in_edge->next);
-
-  if(!in_edge) return 0;
-  EDGE* out_edge = in_edge->data.ptr;
-  edge_free(out_edge, &a->graph->format);
-  edge_free(in_edge, &b->graph->format);
-  free(out_edge);
-  free(in_edge);
-  return 1;
-}
-
-int graph_disconnect_nodes(struct NODE* a, struct NODE* b) {
-
-  EDGE* bi_ref_edge = NULL;
-  for(bi_ref_edge = b->edges[BI_REF]; bi_ref_edge && bi_ref_edge->node != a; bi_ref_edge = bi_ref_edge->next);
-
-  if(!bi_ref_edge) return 0;
-  EDGE* bi_edge = bi_ref_edge->data.ptr;
-  edge_free(bi_edge, &a->graph->format);
-  edge_free(bi_ref_edge, &b->graph->format);
-  free(bi_ref_edge);
-  free(bi_edge);
-  return 1;
-}

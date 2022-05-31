@@ -1,5 +1,5 @@
-#include "data.h"
-#include "data_format.h"
+#include "data/data.h"
+#include "data/data_format.h"
 #include <stdlib.h>
 
 DATA* data_init(DATA* data, void* ptr, unsigned long len) {

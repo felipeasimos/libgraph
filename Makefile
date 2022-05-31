@@ -117,11 +117,10 @@ MAIN_HEADERS_LOCATION :=$(addprefix -I,$(MAIN_HEADERS_LOCATION)) $(GENERAL_HEADE
 TESTS_HEADERS_LOCATION :=$(addprefix -I,$(TESTS_HEADERS_LOCATION)) $(GENERAL_HEADERS_LOCATION)
 
 folders:
-	@mkdir -p $(TESTS_OBJ_DIR)
-	@mkdir -p $(OBJ_DIR)
+	@mkdir -p $(dir $(SRC_OBJS))
+	@mkdir -p $(dir $(TESTS_OBJS))
 	@mkdir -p $(MAIN_DIR)
 	@mkdir -p $(LIB_DIR)
-	@mkdir -p $(OBJ_DIR)
 
 # build objects
 $(SRC_OBJS): folders

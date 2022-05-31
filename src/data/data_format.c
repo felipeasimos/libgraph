@@ -1,5 +1,5 @@
-#include "data_format.h"
-#include "data.h"
+#include "data/data_format.h"
+#include "data/data.h"
 #include <stdlib.h>
 #include <stdio.h>
 

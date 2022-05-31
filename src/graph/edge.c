@@ -1,6 +1,6 @@
-#include "edge.h"
-#include "data_format.h"
-#include "node.h"
+#include "graph/edge.h"
+#include "data/data_format.h"
+#include "graph/node.h"
 
 #include <string.h>
 #include <stdlib.h>

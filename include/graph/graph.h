@@ -1,8 +1,8 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
-#include "data_format.h"
-#include "edge.h"
+#include "data/data_format.h"
+#include "graph/edge.h"
 
 #include <stdio.h>
 
@@ -124,7 +124,14 @@ void graph_remove_node(struct NODE* a);
 //! @return 1 if operation was successful, otherwise 0
 int graph_to_dot_file(GRAPH* graph, FILE* file);
 
+//! @relates GRAPH
+//! @brief topologically sort the order of #graph.nodes.
+//! @details this only make sense with directional edges. The presence of bidirectional
+//! edges will make so an error is returned
+//! @param[in] graph : graph to sort
+//! @return 1 on success, otherwise 0
+int graph_topological_sort(GRAPH* graph);
+
 GRAPH* graph_from_dot_file(GRAPH* graph, FILE* file);
-void graph_topological_sort(GRAPH* graph, struct NODE* source, struct NODE* sink);
 
 #endif

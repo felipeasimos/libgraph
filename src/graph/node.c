@@ -1,7 +1,7 @@
-#include "node.h"
-#include "data_format.h"
-#include "edge.h"
-#include "graph.h"
+#include "graph/node.h"
+#include "data/data_format.h"
+#include "graph/edge.h"
+#include "graph/graph.h"
 
 #include <stdio.h>
 #include <stdlib.h>

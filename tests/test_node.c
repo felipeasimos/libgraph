@@ -1,6 +1,6 @@
 #include "ctdd.h"
-#include "node.h"
-#include "edge.h"
+#include "graph/node.h"
+#include "graph/edge.h"
 
 #include <stdlib.h>
 

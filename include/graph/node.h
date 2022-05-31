@@ -1,7 +1,7 @@
 #ifndef NODE_H
 #define NODE_H
 
-#include "data.h"
+#include "data/data.h"
 
 typedef struct NODE {
 

@@ -1,8 +1,8 @@
 #include "ctdd.h"
-#include "graph.h"
-#include "data_format.h"
-#include "node.h"
-#include "edge.h"
+#include "graph/graph.h"
+#include "data/data_format.h"
+#include "graph/node.h"
+#include "graph/edge.h"
 
 #include <stdlib.h>
 

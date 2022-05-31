@@ -1,7 +1,7 @@
 #ifndef EDGE_H
 #define EDGE_H
 
-#include "data.h"
+#include "data/data.h"
 
 //! @relates EDGE
 enum EDGE_TYPE {

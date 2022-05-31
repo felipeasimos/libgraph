@@ -1,6 +1,6 @@
 #include "ctdd.h"
-#include "data.h"
-#include "data_format.h"
+#include "data/data.h"
+#include "data/data_format.h"
 #include <stdlib.h>
 
 ctdd_test(test_data_init) {

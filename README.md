@@ -10,6 +10,35 @@ Graph library for C. Features:
 * Algorithms like:
   * Topological ordering
 
+## Todo
+
+[] Add stack struct to lib
+[] Add hashmap struct to lib
+[] Add set struct to lib
+[] Topological sorting
+[] Build graph from DOT file
+[] Mealy machine implementation
+  - [] Mealy machine struct and data
+[] Moore machine implementation
+  - [] Moore machine struct and data
+[] Convert mealy machine to moore machine
+[] Convert moore machine to mealy machine
+[] NFA
+  - [] NFA struct and data
+  - [] Build from matrix
+  - [] Build from csv
+  - [] Write to csv
+[] DFA
+  - [] DFA struct and data
+  - [] Build from matrix
+  - [] Build from csv
+  - [] Write to csv
+  - [] DFA minimization
+  - [] EBNF 
+[] Convert NFA to DFA
+[] Convert DFA to NFA
+[] EBNF to DFA - Scanner
+
 ## API notation
 
 * Struct initialization functions (`*_init`):

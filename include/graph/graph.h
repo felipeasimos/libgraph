@@ -1,5 +1,5 @@
-#ifndef GRAPH_H
-#define GRAPH_H
+#ifndef LIBGRAPH_GRAPH_H
+#define LIBGRAPH_GRAPH_H
 
 #include "data/data_format.h"
 #include "graph/edge.h"
@@ -123,6 +123,12 @@ void graph_remove_node(struct NODE* a);
 //! @param[in] file : open file to write to
 //! @return 1 if operation was successful, otherwise 0
 int graph_to_dot_file(GRAPH* graph, FILE* file);
+
+//! @relates GRAPH
+//! @brief return dynamically allocated matrix representing graph structure
+//! @param[in] graph : graph struct to convert to matrix
+//! @return pointer to matrix n x n, where n is #graph.num_nodes
+int* graph_to_matrix(GRAPH* graph);
 
 //! @relates GRAPH
 //! @brief topologically sort the order of #graph.nodes.

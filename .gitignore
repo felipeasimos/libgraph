@@ -2,3 +2,4 @@ build/
 docs/
 compile_flags.txt
 graph.c
+*.dot

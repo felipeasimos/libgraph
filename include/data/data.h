@@ -1,5 +1,5 @@
-#ifndef DATA_H
-#define DATA_H
+#ifndef LIBGRAPH_DATA_H
+#define LIBGRAPH_DATA_H
 
 struct DATA_FORMAT;
 //! @brief Points to user data.

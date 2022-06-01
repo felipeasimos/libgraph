@@ -1,5 +1,5 @@
-#ifndef EDGE_H
-#define EDGE_H
+#ifndef LIBGRAPH_EDGE_H
+#define LIBGRAPH_EDGE_H
 
 #include "data/data.h"
 

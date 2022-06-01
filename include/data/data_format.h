@@ -1,5 +1,5 @@
-#ifndef DATA_FORMAT_H
-#define DATA_FORMAT_H
+#ifndef LIBGRAPH_DATA_FORMAT_H
+#define LIBGRAPH_DATA_FORMAT_H
 
 #include "data.h"
 

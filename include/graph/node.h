@@ -1,5 +1,5 @@
-#ifndef NODE_H
-#define NODE_H
+#ifndef LIBGRAPH_NODE_H
+#define LIBGRAPH_NODE_H
 
 #include "data/data.h"
 

@@ -12,8 +12,6 @@ typedef struct DATA {
   unsigned long len;
   //! @brief Points to memory space with user data.
   void* ptr;
-  //! @brief May point to struct containing this struct
-  void* container;
 } DATA;
 
 //! @relates DATA

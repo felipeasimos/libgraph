@@ -6,7 +6,6 @@ DATA* data_init(DATA* data, void* ptr, unsigned long len) {
   data = data ? data : malloc(sizeof(DATA));
   data->ptr = ptr;
   data->len = len;
-  data->container = NULL;
   return data;
 }
 

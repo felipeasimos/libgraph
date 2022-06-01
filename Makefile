@@ -112,9 +112,9 @@ MAIN_LIBS_LOCATION :=$(addprefix -L,$(MAIN_LIBS_LOCATION)) $(GENERAL_LIBS_LOCATI
 TESTS_LIBS_LOCATION :=$(addprefix -L,$(TESTS_LIBS)) $(GENERAL_LIBS_LOCATION)
 
 # add -I to header directories
-GENERAL_HEADERS_LOCATION :=$(addprefix -I,$(GENERAL_HEADERS_LOCATION)) $(addprefix -I,$(INCLUDE_DIR))
-MAIN_HEADERS_LOCATION :=$(addprefix -I,$(MAIN_HEADERS_LOCATION)) $(GENERAL_HEADERS_LOCATION)
-TESTS_HEADERS_LOCATION :=$(addprefix -I,$(TESTS_HEADERS_LOCATION)) $(GENERAL_HEADERS_LOCATION)
+GENERAL_HEADERS_LOCATION_WITH_FLAG :=$(addprefix -I,$(GENERAL_HEADERS_LOCATION)) $(addprefix -I,$(INCLUDE_DIR))
+MAIN_HEADERS_LOCATION_WITH_FLAG :=$(addprefix -I,$(MAIN_HEADERS_LOCATION)) $(GENERAL_HEADERS_LOCATION_WITH_FLAG)
+TESTS_HEADERS_LOCATION_WITH_FLAG :=$(addprefix -I,$(TESTS_HEADERS_LOCATION)) $(GENERAL_HEADERS_LOCATION_WITH_FLAG)
 
 folders:
 	@mkdir -p $(dir $(SRC_OBJS))
@@ -125,29 +125,29 @@ folders:
 # build objects
 $(SRC_OBJS): folders
 $(SRC_OBJS): $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-	$(COMPILER) $(FLAGS) $(GENERAL_HEADERS_LOCATION) $< -c -o $@ $(GENERAL_LIBS_LOCATION) $(GENERAL_LIBS)
+	$(COMPILER) $(FLAGS) $(GENERAL_HEADERS_LOCATION_WITH_FLAG) $< -c -o $@ $(GENERAL_LIBS_LOCATION) $(GENERAL_LIBS)
 
 # build tests objects
 $(TESTS_OBJS): $(SRC_OBJS)
 $(TESTS_OBJS): $(TESTS_OBJ_DIR)/%.o: $(TESTS_SRC_DIR)/%.c
-	$(COMPILER) $(FLAGS) $(TESTS_HEADERS_LOCATION) $< -c -o $@ $(TESTS_LIBS_LOCATION) $(TESTS_LIBS)
+	$(COMPILER) $(FLAGS) $(TESTS_HEADERS_LOCATION_WITH_FLAG) $< -c -o $@ $(TESTS_LIBS_LOCATION) $(TESTS_LIBS)
 
 # build lib
 $(TARGET_LIB): $(SRC_OBJS)
-	$(COMPILER) $(FLAGS) $(GENERAL_HEADERS_LOCATION) $^ -shared -o $@
+	$(COMPILER) $(FLAGS) $(GENERAL_HEADERS_LOCATION_WITH_FLAG) $^ -shared -o $@
 
 # build tests executable
 $(TARGET_TESTS): $(TESTS_OBJS)
-	$(COMPILER) $(FLAGS) $(TESTS_HEADERS_LOCATION) $(SRC_OBJS) $^ -o $@
+	$(COMPILER) $(FLAGS) $(TESTS_HEADERS_LOCATION_WITH_FLAG) $(SRC_OBJS) $^ -o $@
 
 # build main
 $(TARGET_MAIN): $(SRC_OBJS) $(MAIN_SRC)
-	$(COMPILER) $(FLAGS) $(MAIN_HEADERS_LOCATION) $^ -o $@ $(MAIN_LIBS_LOCATION) $(MAIN_LIBS)
+	$(COMPILER) $(FLAGS) $(MAIN_HEADERS_LOCATION_WITH_FLAG) $^ -o $@ $(MAIN_LIBS_LOCATION) $(MAIN_LIBS)
 
 # main commands
 lib: FLAGS+=$(RELEASE_FLAGS)
 lib: $(SRC_OBJS)
-	$(COMPILER) $(FLAGS) $(GENERAL_HEADERS_LOCATION) $^ -shared -o $(TARGET_LIB)
+	$(COMPILER) $(FLAGS) $(GENERAL_HEADERS_LOCATION_WITH_FLAG) $^ -shared -o $(TARGET_LIB)
 
 test: FLAGS+=$(DEBUG_FLAGS)
 test: $(TESTS_OBJS) $(TARGET_TESTS)
@@ -167,6 +167,10 @@ run: clean build
 compile_flags:
 	@echo "-I" > $(ROOT_DIR)/compile_flags.txt
 	@echo "$(INCLUDE_DIR)" >> $(ROOT_DIR)/compile_flags.txt
+	@for folder in $(TESTS_HEADERS_LOCATION) $(MAIN_HEADERS_LOCATION); do\
+		echo "-I" >> $(ROOT_DIR)/compile_flags.txt;\
+		echo $$folder >> $(ROOT_DIR)/compile_flags.txt;\
+	done
 	@echo "-DDEBUG" >> $(ROOT_DIR)/compile_flags.txt
 	@for opt in $(FLAGS); do\
 		echo $$opt >> $(ROOT_DIR)/compile_flags.txt;\

@@ -78,7 +78,7 @@ TESTS_FLAGS :=--coverage
 # compilation variables to be set per project
 
 # define directories
-ROOT_DIR :=.
+ROOT_DIR :=$(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 SRC_DIR :=$(ROOT_DIR)/src
 INCLUDE_DIR :=$(ROOT_DIR)/include
 BUILD_DIR :=$(ROOT_DIR)/build

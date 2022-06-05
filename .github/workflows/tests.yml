@@ -13,15 +13,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: valgrind install
-      run: sudo apt install valgrind
-    - name: build and test
-      run: make test
-    - name: llvm-cov install
-      run: sudo apt install llvm
-    - name: get test coverage for badge
+    - uses: docker-practice/actions-setup-docker@master
+    - name: build docker image
+      run: docker build . -t libgraph
+    - name: test
       run: |
-        echo "COVERAGE=$(make avg)" >> $GITHUB_ENV
+        echo "COVERAGE=$(docker run --rm -it libgraph sh -c 'make test avg' | tail -n 1)" >> $GITHUB_ENV
         
         # var REF = 'refs/pull/27/merge.json';
         REF=${{ github.ref }}

@@ -8,12 +8,12 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v3
-    - name: valgrind install
-      run: sudo apt install valgrind
-    - name: build
-      run: make lib
+    - uses: docker-practice/actions-setup-docker@master
+    - name: build docker image
+      run: docker build . -t libgraph
+    - name: build lib inside container
+      run: docker run --rm -it libgraph sh -c 'make lib'

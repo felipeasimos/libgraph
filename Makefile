@@ -146,6 +146,7 @@ $(TARGET_MAIN): $(SRC_OBJS) $(MAIN_SRC)
 	$(COMPILER) $(FLAGS) $(MAIN_HEADERS_LOCATION_WITH_FLAG) $^ -o $@ $(MAIN_LIBS_LOCATION) $(MAIN_LIBS)
 
 # main commands
+lib: clean
 lib: FLAGS+=$(RELEASE_FLAGS)
 lib: $(TARGET_LIB)
 

@@ -30,7 +30,7 @@ jobs:
         IFS='/' read -ra PATHS <<< "$REF"
         # var BRANCH_NAME = PATHS[1] + '_' + PATHS[2];
         BRANCH_NAME="${PATHS[1]}_${PATHS[2]}"
-        # console.log(BRANCH_NAME); // 'pull_27'
+        # console.log(BRANCH_NAME); // 'pull_27' or 'heads_main'
         echo $BRANCH_NAME
         # process.env.BRANCH = 'pull_27';
         echo "BRANCH=$(echo ${BRANCH_NAME})" >> $GITHUB_ENV
@@ -39,8 +39,8 @@ jobs:
       with:
         auth: ${{ secrets.GIST_SECRET }}
         gistID: 1062ce0f390bb2b6458d29f225cc08b5
-        filename: libgraph__${{ env.BRANCH }}.json
+        filename: libgraph__${{ env.BRANCH }}_coverage.json
         label: Test Coverage
         message: ${{ env.COVERAGE }}
         color: green
-        namedLogo: Linux
+        namedLogo: Docker

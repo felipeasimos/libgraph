@@ -17,3 +17,29 @@ jobs:
       run: docker build . -t libgraph
     - name: build lib inside container
       run: docker run --rm libgraph sh -c 'make lib'
+    - name: get loc for badge
+      run: |
+        echo "LOC=$(docker run --rm libgraph sh -c 'make loc' 2>&1 | tail -n 1)" >> $GITHUB_ENV
+        
+        # var REF = 'refs/pull/27/merge.json';
+        REF=${{ github.ref }}
+        # console.log('github.ref: ' + REF);
+        echo "github.ref: $REF"
+        # var PATHS = REF.split('/');
+        IFS='/' read -ra PATHS <<< "$REF"
+        # var BRANCH_NAME = PATHS[1] + '_' + PATHS[2];
+        BRANCH_NAME="${PATHS[1]}_${PATHS[2]}"
+        # console.log(BRANCH_NAME); // 'pull_27' or 'heads_main'
+        echo $BRANCH_NAME
+        # process.env.BRANCH = 'pull_27';
+        echo "BRANCH=$(echo ${BRANCH_NAME})" >> $GITHUB_ENV
+    - name: create loc badge
+      uses: schneegans/dynamic-badges-action@v1.0.0
+      with:
+        auth: ${{ secrets.GIST_SECRET }}
+        gistID: 1062ce0f390bb2b6458d29f225cc08b5
+        filename: libgraph__${{ env.BRANCH }}_loc.json
+        label: Lines of Code
+        message: ${{ env.LOC }}
+        color: green
+        namedLogo: C

@@ -1,4 +1,4 @@
-.PHONY: test lib debug build run compile_flags docs init clean help
+.PHONY: test lib debug build run coverage avg loc compile_flags docs init clean help
 help:
 	# This Makefile can produce a dynamic library, test binary
 	# and main executable for C/C++ projects.
@@ -17,6 +17,9 @@ help:
 	# debug - build and run main executable (if you have one) with debug flags and debugger
 	# build - build main executable for release (if you have one)
 	# run - build and run main executable for release (if you have one)
+	# coverage - run code coverage command
+	# avg - shows average code coverage from percentages displayed by coverage command to stdout
+	# loc - show sum of lines in the src/ and include/ directories
 	# compile_flags - generate compile_flags.txt file for clangd lsp
 	# docs - generate documentation
 	# init - create minimal project structure in current folder (src/, tests/, include/)
@@ -41,10 +44,10 @@ DOCUMENTATION_COMMAND :=doxygen Doxyfile
 TARGET :=graph
 
 # debugger command to run when debugging (you can leave it empty)
-DEBUGGER_COMMAND := valgrind --leak-check=full --exit-on-first-error=yes --error-exitcode=1 --quiet
+DEBUGGER_COMMAND :=valgrind --leak-check=full --exit-on-first-error=yes --error-exitcode=1 --quiet
 
 # code coverage command to use (you can leave it empty)
-CODE_COVERAGE_COMMAND :=
+CODE_COVERAGE_COMMAND :=llvm-cov gcov -n
 
 # these can be either c or cpp
 TESTS_FILE_EXTENSION :=c
@@ -65,14 +68,14 @@ GENERAL_HEADERS_LOCATION :=
 MAIN_HEADERS_LOCATION :=
 TESTS_HEADERS_LOCATION :=./tests
 
-# ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^
-# compilation variables to be set per project
-
 # general flags
 FLAGS := -pedantic-errors -Wall -Wextra -fPIC -Werror
 DEBUG_FLAGS :=-DDEBUG -O0 -g
 RELEASE_FLAGS :=-O3 -DNDEBUG
-RELEASE_FLAGS :=-O3 -DNDEBUG
+TESTS_FLAGS :=--coverage
+
+# ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^
+# compilation variables to be set per project
 
 # define directories
 ROOT_DIR :=.
@@ -116,32 +119,30 @@ GENERAL_HEADERS_LOCATION_WITH_FLAG :=$(addprefix -I,$(GENERAL_HEADERS_LOCATION))
 MAIN_HEADERS_LOCATION_WITH_FLAG :=$(addprefix -I,$(MAIN_HEADERS_LOCATION)) $(GENERAL_HEADERS_LOCATION_WITH_FLAG)
 TESTS_HEADERS_LOCATION_WITH_FLAG :=$(addprefix -I,$(TESTS_HEADERS_LOCATION)) $(GENERAL_HEADERS_LOCATION_WITH_FLAG)
 
-folders:
-	@mkdir -p $(dir $(SRC_OBJS))
-	@mkdir -p $(dir $(TESTS_OBJS))
-	@mkdir -p $(MAIN_DIR)
-	@mkdir -p $(LIB_DIR)
-
 # build objects
-$(SRC_OBJS): folders
 $(SRC_OBJS): $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	@mkdir -p $(dir $@)
 	$(COMPILER) $(FLAGS) $(GENERAL_HEADERS_LOCATION_WITH_FLAG) $< -c -o $@ $(GENERAL_LIBS_LOCATION) $(GENERAL_LIBS)
 
 # build tests objects
 $(TESTS_OBJS): $(SRC_OBJS)
 $(TESTS_OBJS): $(TESTS_OBJ_DIR)/%.o: $(TESTS_SRC_DIR)/%.c
+	@mkdir -p $(dir $@)
 	$(COMPILER) $(FLAGS) $(TESTS_HEADERS_LOCATION_WITH_FLAG) $< -c -o $@ $(TESTS_LIBS_LOCATION) $(TESTS_LIBS)
 
 # build lib
 $(TARGET_LIB): $(SRC_OBJS)
+	@mkdir -p $(dir $@)
 	$(COMPILER) $(FLAGS) $(GENERAL_HEADERS_LOCATION_WITH_FLAG) $^ -shared -o $@
 
 # build tests executable
 $(TARGET_TESTS): $(TESTS_OBJS)
+	@mkdir -p $(dir $@)
 	$(COMPILER) $(FLAGS) $(TESTS_HEADERS_LOCATION_WITH_FLAG) $(SRC_OBJS) $^ -o $@
 
 # build main
 $(TARGET_MAIN): $(SRC_OBJS) $(MAIN_SRC)
+	@mkdir -p $(dir $@)
 	$(COMPILER) $(FLAGS) $(MAIN_HEADERS_LOCATION_WITH_FLAG) $^ -o $@ $(MAIN_LIBS_LOCATION) $(MAIN_LIBS)
 
 # main commands
@@ -149,8 +150,8 @@ lib: FLAGS+=$(RELEASE_FLAGS)
 lib: $(SRC_OBJS)
 	$(COMPILER) $(FLAGS) $(GENERAL_HEADERS_LOCATION_WITH_FLAG) $^ -shared -o $(TARGET_LIB)
 
-test: FLAGS+=$(DEBUG_FLAGS)
-test: $(TESTS_OBJS) $(TARGET_TESTS)
+test: FLAGS+=$(DEBUG_FLAGS) $(TESTS_FLAGS)
+test: $(TARGET_TESTS)
 	$(DEBUGGER_COMMAND) $(TARGET_TESTS)
 
 debug: FLAGS+=$(DEBUG_FLAGS)
@@ -161,8 +162,18 @@ build: clean
 build: FLAGS+=$(RELEASE_FLAGS)
 build: $(SRC_OBJS) $(TARGET_MAIN)
 
-run: clean build
+run: build
 	$(TARGET_MAIN)
+
+coverage:
+	@$(CODE_COVERAGE_COMMAND) $(SRC_OBJS)
+
+avg:
+	@$(MAKE) coverage | grep -Eo "[[:digit:]]{0,3}\.[[:digit:]]{0,2}%" | \
+		sed 's/%//' | \
+		awk -v CONVFMT=%.4g '{ s+=$$1 } END { print s/NR "%" }'
+loc:
+	@find $(SRC_DIR) $(INCLUDE_DIR) -exec cat {} + 2>/dev/null | grep -Ev "(^$$)|(^//)|(^/\*)" | wc -l
 
 compile_flags:
 	@echo "-I" > $(ROOT_DIR)/compile_flags.txt

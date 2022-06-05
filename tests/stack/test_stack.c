@@ -4,6 +4,26 @@
 
 #include <stdlib.h>
 
+unsigned long n = 10;
+STACK* stack = NULL;
+
+void init_stack() {
+  stack = stack_init(n);
+}
+
+void init_stack_with_data() {
+
+  init_stack();
+  for(unsigned long i = 0; i < n; i++) {
+    stack_push(stack, (void*)i, NULL);
+  }
+}
+
+void free_stack() {
+  stack_free(stack, NULL);
+  stack = NULL;
+}
+
 ctdd_test(test_stack_init) {
 
   unsigned long n = 10;
@@ -15,29 +35,15 @@ ctdd_test(test_stack_init) {
 }
 
 ctdd_test(test_stack_push) {
-
-  unsigned long n = 10;
-  STACK* stack = NULL;
-  stack = stack_init(n);
-
   for(unsigned long i = 0; i < n; i++) {
     ctdd_check(stack_push(stack, (void*)i, NULL));
     ctdd_check(stack->size == i+1);
   }
   ctdd_check(!stack_push(stack, (void*)0, NULL));
-  stack_free(stack, NULL);
 }
 
 ctdd_test(test_stack_pop) {
 
-  unsigned long n = 10;
-  STACK* stack = NULL;
-  stack = stack_init(n);
-  ctdd_check(stack);
-  for(unsigned long i = 0; i < n; i++) {
-    ctdd_check(stack_push(stack, (void*)i, NULL));
-  }
-  ctdd_check(!stack_push(stack, (void*)0, NULL));
   for(unsigned long i = 0; i < n; i++) {
     DATA* data = NULL;
     ctdd_check(data = stack_pop(stack));
@@ -45,11 +51,12 @@ ctdd_test(test_stack_pop) {
     free(data);
   }
   ctdd_check(!stack_pop(stack));
-  stack_free(stack, NULL);
 }
 
 ctdd_test_suite(test_stack) {
+  ctdd_configure(init_stack, free_stack);
   ctdd_run_test(test_stack_init);
   ctdd_run_test(test_stack_push);
+  ctdd_configure(init_stack_with_data, free_stack);
   ctdd_run_test(test_stack_pop);
 }

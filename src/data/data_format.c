@@ -11,6 +11,7 @@ DATA_FORMAT* data_format_init(DATA_FORMAT* data_ptr) {
   data_ptr->debug = default_debug;
   data_ptr->print = default_print;
   data_ptr->cmp = default_cmp;
+  data_ptr->key = default_key;
   return data_ptr;
 }
 
@@ -52,4 +53,8 @@ int default_cmp(DATA* a, DATA* b) {
     return -1;
   }
   return 0;
+}
+
+unsigned long default_key(DATA* a) {
+  return *(unsigned long*)&a->ptr;
 }

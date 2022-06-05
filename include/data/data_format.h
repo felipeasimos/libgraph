@@ -31,6 +31,8 @@ typedef struct DATA_FORMAT {
   //! @brief Compare one #DATA struct with another.
   //! @details Must return 1 if \a a < \a b , 0 if \a a == \a b and -1 if \a a > \a b.
   int (*cmp)(DATA* a, DATA* b);
+  //! @brief returns hash code for this data to be used by hashmap
+  unsigned long (*key)(DATA* a);
 } DATA_FORMAT;
 
 //! @relates DATA_FORMAT
@@ -44,5 +46,6 @@ void default_destructor(DATA* data);
 char* default_debug(DATA* data);
 char* default_print(DATA* data);
 int default_cmp(DATA* a, DATA* b);
+unsigned long default_key(DATA* a);
 
 #endif

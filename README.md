@@ -1,6 +1,7 @@
 # Libgraph
 
 [![Tests](https://github.com/asimos-bot/libgraph/workflows/Tests/badge.svg)](https://github.com/asimos-bot/libgraph/actions/workflows/main.yml)
+![Coverage Badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/asimos-bot/1062ce0f390bb2b6458d29f225cc08b5/raw/libgraph__heads_main##.json)
 
 Graph library for C. Features:
 
@@ -13,7 +14,7 @@ Graph library for C. Features:
 ## Todo
 
 - [x] Get matrix representation of the graph structure
-- [] Add stack struct to lib
+- [x] Add stack struct to lib
 - [] Add hashmap struct to lib
 - [] Add set struct to lib
 - [] Topological sorting

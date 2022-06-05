@@ -2,7 +2,7 @@
 
 [![Build](https://github.com/asimos-bot/libgraph/workflows/Build/badge.svg)](https://github.com/asimos-bot/libgraph/actions/workflows/build.yml)
 [![Tests](https://github.com/asimos-bot/libgraph/workflows/Tests/badge.svg)](https://github.com/asimos-bot/libgraph/actions/workflows/tests.yml)
-![Coverage Badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/asimos-bot/1062ce0f390bb2b6458d29f225cc08b5/raw/libgraph__heads_main##.json)
+![Coverage Badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/asimos-bot/1062ce0f390bb2b6458d29f225cc08b5/raw/libgraph__heads_main.json)
 
 Graph library for C. Features:
 
@@ -16,31 +16,31 @@ Graph library for C. Features:
 
 - [x] Get matrix representation of the graph structure
 - [x] Add stack struct to lib
-- [] Add hashmap struct to lib
-- [] Add set struct to lib
-- [] Topological sorting
-- [] Build graph from DOT file
-- [] Mealy machine implementation
-  - [] Mealy machine struct and data
-- [] Moore machine implementation
-  - [] Moore machine struct and data
-- [] Convert mealy machine to moore machine
-- [] Convert moore machine to mealy machine
-- [] NFA
-  - [] NFA struct and data
-  - [] Build from matrix
-  - [] Build from csv
-  - [] Write to csv
-- [] DFA
-  - [] DFA struct and data
-  - [] Build from matrix
-  - [] Build from csv
-  - [] Write to csv
-  - [] DFA minimization
-  - [] EBNF 
-- [] Convert NFA to DFA
-- [] Convert DFA to NFA
-- [] EBNF to DFA - Scanner
+- [ ] Add hashmap struct to lib
+- [ ] Add set struct to lib
+- [ ] Topological sorting
+- [ ] Build graph from DOT file
+- [ ] Mealy machine implementation
+  - [ ] Mealy machine struct and data
+- [ ] Moore machine implementation
+  - [ ] Moore machine struct and data
+- [ ] Convert mealy machine to moore machine
+- [ ] Convert moore machine to mealy machine
+- [ ] NFA
+  - [ ] NFA struct and data
+  - [ ] Build from matrix
+  - [ ] Build from csv
+  - [ ] Write to csv
+- [ ] DFA
+  - [ ] DFA struct and data
+  - [ ] Build from matrix
+  - [ ] Build from csv
+  - [ ] Write to csv
+  - [ ] DFA minimization
+  - [ ] EBNF 
+- [ ] Convert NFA to DFA
+- [ ] Convert DFA to NFA
+- [ ] EBNF to DFA - Scanner
 
 ## API notation
 

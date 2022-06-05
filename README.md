@@ -1,6 +1,7 @@
 # Libgraph
 
-[![Tests](https://github.com/asimos-bot/libgraph/workflows/Tests/badge.svg)](https://github.com/asimos-bot/libgraph/actions/workflows/main.yml)
+[![Build](https://github.com/asimos-bot/libgraph/workflows/Build/badge.svg)](https://github.com/asimos-bot/libgraph/actions/workflows/build.yml)
+[![Tests](https://github.com/asimos-bot/libgraph/workflows/Tests/badge.svg)](https://github.com/asimos-bot/libgraph/actions/workflows/tests.yml)
 ![Coverage Badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/asimos-bot/1062ce0f390bb2b6458d29f225cc08b5/raw/libgraph__heads_main##.json)
 
 Graph library for C. Features:

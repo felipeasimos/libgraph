@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  test:
 
     runs-on: ubuntu-latest
 
@@ -17,8 +17,10 @@ jobs:
     - name: build docker image
       run: docker build . -t libgraph
     - name: test
+      run: docker run --rm libgraph sh -c 'make clean test'
+    - name: get coverage for badge
       run: |
-        echo "COVERAGE=$(docker run --rm -it libgraph sh -c 'make test avg' | tail -n 1)" >> $GITHUB_ENV
+        echo "COVERAGE=$(docker run --rm libgraph sh -c 'make clean test avg' 2>&1 | tail -n 1)" >> $GITHUB_ENV
         
         # var REF = 'refs/pull/27/merge.json';
         REF=${{ github.ref }}

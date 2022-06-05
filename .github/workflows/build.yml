@@ -16,4 +16,4 @@ jobs:
     - name: build docker image
       run: docker build . -t libgraph
     - name: build lib inside container
-      run: docker run --rm -it libgraph sh -c 'make lib'
+      run: docker run --rm libgraph sh -c 'make lib'

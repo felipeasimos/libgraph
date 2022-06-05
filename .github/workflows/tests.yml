@@ -37,7 +37,7 @@ jobs:
     - name: create coverage badge
       uses: schneegans/dynamic-badges-action@v1.0.0
       with:
-        auth: $${{ secrets.GIST_SECRET }}
+        auth: ${{ secrets.GIST_SECRET }}
         gistID: 1062ce0f390bb2b6458d29f225cc08b5
         filename: libgraph__${{ env.BRANCH }}.json
         label: Test Coverage

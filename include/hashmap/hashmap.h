@@ -11,10 +11,12 @@ typedef struct HASHMAP_NODE {
 
 typedef struct HASHMAP {
 
-  HASHMAP_NODE* hashmap_nodes;
   unsigned long capacity;
+  HASHMAP_NODE* hashmap_nodes[];
 } HASHMAP;
 
-HASHMAP_NODE* hashmap_init(HASHMAP* hashmap, unsigned long capacity);
+HASHMAP* hashmap_init(unsigned long capacity);
+
+void hashmap_free(HASHMAP* hashmap, struct DATA_FORMAT* format);
 
 #endif

@@ -8,6 +8,7 @@
 #include <string.h>
 
 void node_free(NODE* node, struct DATA_FORMAT* format) {
+  while(node->num_info) node_remove_info(node);
   format->destructor(&node->data);
   // since there are 4 types of edges
   for(int i = 0; i < 4; i++) {
@@ -73,4 +74,39 @@ void node_connect(NODE* a, NODE* b, void* args) {
 
   b_edge->mirror = a_edge;
   a_edge->mirror = b_edge;
+}
+
+DATA* node_get_data(NODE* node) {
+  unsigned long num_info = node->num_info;
+  DATA* data = &node->data;
+  while( num_info-- ) {
+    data = data->ptr;
+  }
+  return data;
+}
+
+void node_add_info(NODE* node, void* info_ptr) {
+
+  INFO_NODE* info = malloc(sizeof(INFO_NODE));
+  info->data = node->data.ptr;
+  info->data_size = node->data.len;
+  info->info = info_ptr;
+  node->data.len = sizeof(INFO_NODE);
+  node->data.ptr = info;
+  node->num_info++;
+}
+
+INFO_NODE* node_get_info(NODE* node) {
+  return node->data.ptr;
+}
+
+void node_remove_info(NODE* node) {
+
+  if(!node->num_info) return;
+
+  INFO_NODE* info = node->data.ptr;
+  node->data.len = info->data_size;
+  node->data.ptr = info->data;
+  free(info);
+  node->num_info--;
 }

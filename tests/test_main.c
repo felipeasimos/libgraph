@@ -8,7 +8,7 @@ int main() {
   ctdd_run_suite(test_data_format);
   ctdd_run_suite(test_data);
   ctdd_run_suite(test_stack);
-  ctdd_run_suite(test_hashmap);
+  ctdd_run_suite(test_set);
   ctdd_run_suite(test_node);
   ctdd_run_suite(test_graph);
 }

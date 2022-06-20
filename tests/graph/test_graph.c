@@ -245,6 +245,44 @@ ctdd_test(test_remove_node) {
   free(graph);
 }
 
+ctdd_test(test_graph_topological_sort) {
+
+  GRAPH* graph = graph_init(NULL, 0, NULL);
+  int max = 5;
+  long i;
+  for(i = 0; i < max; i++) {
+    graph_add_data(graph, (void*)i);
+  }
+  graph_oriented_connect_nodes(
+      graph_get(graph, 0),
+      graph_get(graph, 1),
+      (void*)2);
+  graph_oriented_connect_nodes(
+      graph_get(graph, 2),
+      graph_get(graph, 4),
+      (void*)5);
+  graph_oriented_connect_nodes(
+      graph_get(graph, 0),
+      graph_get(graph, 2),
+      (void*)6
+      );
+  graph_oriented_connect_nodes(
+      graph_get(graph, 1),
+      graph_get(graph, 3),
+      (void*)8
+      );
+  graph_oriented_connect_nodes(
+      graph_get(graph, 3),
+      graph_get(graph, 4),
+      (void*)9
+      );
+  graph_print( graph );
+  ctdd_check( graph_topological_sort(graph) );
+  graph_print( graph );
+  graph_free(graph);
+  free(graph);
+}
+
 ctdd_test_suite(test_graph) {
   ctdd_run_test(test_graph_init);
   ctdd_run_test(test_graph_add_data);
@@ -255,4 +293,5 @@ ctdd_test_suite(test_graph) {
   ctdd_run_test(test_graph_oriented_disconnect_nodes);
   ctdd_run_test(test_graph_disconnect_nodes);
   ctdd_run_test(test_remove_node);
+  ctdd_run_test(test_graph_topological_sort);
 }

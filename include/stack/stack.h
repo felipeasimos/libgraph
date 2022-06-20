@@ -31,6 +31,13 @@ void stack_free(STACK* stack, struct DATA_FORMAT* format);
 int stack_push(STACK* stack, void* args, struct DATA_FORMAT* format);
 
 //! @relates STACK
+//! @brief get data on top of stack
+//! @details returns NULL if stack is empty
+//! @param[in] stack : stack struct
+//! @returns pointer to data on top of stack
+DATA* stack_peek(STACK* stack);
+
+//! @relates STACK
 //! @brief pop data from the top of stack
 //! @param[in] stack : stack struct
 //! @return dynamically allocated copy of the data at the top of the stack. return NULL if #STACK.size == 0

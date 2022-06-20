@@ -1,4 +1,4 @@
-.PHONY: test lib debug build run coverage avg loc compile_flags docs init clean help
+.PHONY: test lib debug build run coverage avg loc compile_flags docs init clean clean-objs help
 help:
 	# This Makefile can produce a dynamic library, test binary
 	# and main executable for C/C++ projects.
@@ -24,6 +24,7 @@ help:
 	# docs - generate documentation
 	# init - create minimal project structure in current folder (src/, tests/, include/)
 	# clean - remove build/ (folder where targets are stored)
+	# clean-objs - remove build/ subfolder with objects generate from src/
 	# help - show this help
 
 # compilation variables to be set per project
@@ -134,6 +135,7 @@ $(TESTS_OBJS): $(TESTS_OBJ_DIR)/%.o: $(TESTS_SRC_DIR)/%.c
 $(TARGET_LIB): $(SRC_OBJS)
 	@mkdir -p $(dir $@)
 	$(COMPILER) $(FLAGS) $(GENERAL_HEADERS_LOCATION_WITH_FLAG) $^ -shared -o $@
+	$(MAKE) -C $(ROOT_DIR) clean-objs
 
 # build tests executable
 $(TARGET_TESTS): $(TESTS_OBJS)
@@ -144,6 +146,7 @@ $(TARGET_TESTS): $(TESTS_OBJS)
 $(TARGET_MAIN): $(SRC_OBJS) $(MAIN_SRC)
 	@mkdir -p $(dir $@)
 	$(COMPILER) $(FLAGS) $(MAIN_HEADERS_LOCATION_WITH_FLAG) $^ -o $@ $(MAIN_LIBS_LOCATION) $(MAIN_LIBS)
+	$(MAKE) -C $(ROOT_DIR) clean-objs
 
 # main commands
 lib: clean
@@ -193,6 +196,11 @@ docs:
 init:
 	@mkdir -p $(INCLUDE_DIR)
 	@mkdir -p $(SRC_DIR)
-	@mkdir -p $(TESTS_SRC)
+	@mkdir -p $(TESTS_SRC_DIR)
 clean:
 	@-rm -rf $(BUILD_DIR)
+
+# clean build/objs/ to avoid debugging objects with release flags later or build for release with debug flags
+clean-objs:
+	@-rm -rf $(OBJ_DIR)
+

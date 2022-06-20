@@ -2,6 +2,8 @@
 #include "graph/node.h"
 #include "graph/edge.h"
 
+#include "stack/stack.h"
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -223,6 +225,76 @@ int* graph_to_matrix(GRAPH* graph) {
   return matrix;
 }
 
+typedef struct TOPO_NODE {
+
+  EDGE* check_next;
+  int visited;
+} TOPO_NODE;
+
 int graph_topological_sort(GRAPH* graph) {
-  return graph != NULL;
-}
+
+  // 0. There must be no nodes with bidirectional edges
+  // 1. find node without in-going edges
+  // 2. add info layer to all nodes
+  //    1. Mark to track visited nodes
+  //    2. Check next - to avoid re-seeing connections
+  TOPO_NODE topo_nodes[graph->num_nodes];
+  NODE* source = NULL;
+  for(unsigned long i = 0; i < graph->num_nodes; i++) {
+    NODE* current = graph_get(graph, i);
+    if(current->num_bi_edges) {
+      for(unsigned long j = 0; j < i; j++) node_remove_info(graph_get(graph, j));
+      return 0;
+    }
+    if(!current->num_in_edges) {
+      if(source) {
+        for(unsigned long j = 0; j < i; j++) node_remove_info(graph_get(graph, j));
+        return 0;
+      }
+      source = graph_get(graph, i);
+    }
+    topo_nodes[i].check_next = current->edges[OUT];
+    topo_nodes[i].visited = 0;
+    node_add_info(current, &topo_nodes[i]);
+  }
+
+  STACK* stack = stack_init(graph->num_nodes);
+  stack_push(stack, (void*)source->graph_idx, NULL);
+  NODE** ordered_nodes = calloc(graph->num_nodes, sizeof(NODE*));
+  unsigned long num_ordered_nodes = 0;
+  unsigned long idx = 0;
+  while(stack_peek(stack)) {
+    idx = (unsigned long)stack_peek(stack)->ptr;
+    NODE* node = graph_get(graph, idx);
+    int has_unvisited_connection = 0;
+    TOPO_NODE* topo_node = node_get_info(node)->info;
+    TOPO_NODE* topo_visit = NULL;
+    NODE* visit = NULL;
+    for(EDGE* edge = topo_node->check_next; edge; edge = edge->next) {
+      visit = edge->mirror->parent;
+      topo_visit = node_get_info(visit)->info;
+      topo_node->check_next = edge->next;
+      // if this hasn't been visited, mark it as visited and insert in stack
+      if(!topo_visit->visited) {
+
+        has_unvisited_connection = 1;
+        topo_visit->visited = 1;
+        stack_push(stack, (void*)visit->graph_idx, NULL);
+        break;
+      }
+    }
+    if(!has_unvisited_connection) {
+      ordered_nodes[num_ordered_nodes++] = node;
+      free(stack_pop(stack));
+     }
+  }
+  // update node array
+  free(graph->nodes);
+  graph->nodes = ordered_nodes;
+  for(unsigned long i = 0; i < graph->num_nodes; i++) {
+    node_remove_info(graph->nodes[i]);
+    graph->nodes[i]->graph_idx = i;
+  }
+  stack_free(stack, NULL);
+  return 1;
+} 

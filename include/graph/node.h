@@ -24,6 +24,13 @@ typedef struct NODE {
   struct EDGE* edges[4];
 } NODE;
 
+typedef struct INFO_NODE {
+  unsigned long data_size;
+  void* data;
+  unsigned long info_size;
+  void* info;
+} INFO_NODE;
+
 //! @relates NODE
 //! @brief Free node struct fields properly
 //! @param[in] node : node struct to free
@@ -62,5 +69,29 @@ void node_connect_to(NODE* a, NODE* b, void* args);
 //! @param[in] b : node to connect
 //! @param[in] args : argument to pass to the edge's data constructor
 void node_connect(NODE* a, NODE* b, void* args);
+
+//! @relates NODE
+//! @brief get data struct from node
+//! @details use it to avoid info layers
+//! @param[in] node : node struct
+//! @returns pointer to data
+DATA* node_get_data(NODE* node);
+
+//! @relates NODE
+//! @brief add info layer struct to NODE
+//! @param[in] node : node struct
+//! @param[in] info : info data
+void node_add_info(NODE* node, void* info);
+
+//! @relates NODE
+//! @brief get info struct from node
+//! @param[in] node : node struct
+//! @returns NULL if there is no info struct, otherwise return pointer to info struct
+INFO_NODE* node_get_info(NODE* node);
+
+//! @relates NODE
+//! @brief remove info struct from NODE
+//! @param[in] node : node struct
+void node_remove_info(NODE* node);
 
 #endif

@@ -34,6 +34,10 @@ int stack_push(STACK* stack, void* args, struct DATA_FORMAT* format) {
   return 1;
 }
 
+DATA* stack_peek(STACK* stack) {
+  return stack->size ? &stack->stack[stack->size-1] : NULL;
+}
+
 DATA* stack_pop(STACK* stack) {
   if(!stack->size) return NULL;
 

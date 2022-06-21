@@ -18,7 +18,7 @@ Graph library for C. Features:
 - [x] Get matrix representation of the graph structure
 - [x] Add stack struct to lib
 - [x] Add set struct to lib
-- [ ] Topological sorting
+- [x] Topological sorting
 - [ ] Build graph from DOT file
 - [ ] Mealy machine implementation
   - [ ] Mealy machine struct and data

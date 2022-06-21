@@ -231,35 +231,21 @@ typedef struct TOPO_NODE {
   int visited;
 } TOPO_NODE;
 
-int graph_topological_sort(GRAPH* graph) {
+void graph_topological_sort(GRAPH* graph, enum EDGE_TYPE order) {
 
-  // 0. There must be no nodes with bidirectional edges
-  // 1. find node without in-going edges
-  // 2. add info layer to all nodes
-  //    1. Mark to track visited nodes
-  //    2. Check next - to avoid re-seeing connections
+  order = order == IN ? OUT : IN;
   TOPO_NODE topo_nodes[graph->num_nodes];
-  NODE* source = NULL;
+  STACK* stack = stack_init(graph->num_nodes);
   for(unsigned long i = 0; i < graph->num_nodes; i++) {
     NODE* current = graph_get(graph, i);
-    if(current->num_bi_edges) {
-      for(unsigned long j = 0; j < i; j++) node_remove_info(graph_get(graph, j));
-      return 0;
+    if((order == IN && !current->num_out_edges) || (order == OUT && !current->num_in_edges)) {
+      stack_push(stack, (void*)i, NULL);
     }
-    if(!current->num_in_edges) {
-      if(source) {
-        for(unsigned long j = 0; j < i; j++) node_remove_info(graph_get(graph, j));
-        return 0;
-      }
-      source = graph_get(graph, i);
-    }
-    topo_nodes[i].check_next = current->edges[OUT];
+    topo_nodes[i].check_next = current->edges[order];
     topo_nodes[i].visited = 0;
     node_add_info(current, &topo_nodes[i]);
   }
 
-  STACK* stack = stack_init(graph->num_nodes);
-  stack_push(stack, (void*)source->graph_idx, NULL);
   NODE** ordered_nodes = calloc(graph->num_nodes, sizeof(NODE*));
   unsigned long num_ordered_nodes = 0;
   unsigned long idx = 0;
@@ -296,5 +282,4 @@ int graph_topological_sort(GRAPH* graph) {
     graph->nodes[i]->graph_idx = i;
   }
   stack_free(stack, NULL);
-  return 1;
 } 

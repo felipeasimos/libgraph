@@ -133,10 +133,10 @@ int* graph_to_matrix(GRAPH* graph);
 //! @relates GRAPH
 //! @brief topologically sort the order of #graph.nodes.
 //! @details this only make sense with directional edges. The presence of bidirectional
-//! edges will make so an error is returned
+//! edges will be ignored
 //! @param[in] graph : graph to sort
-//! @return 1 on success, otherwise 0
-int graph_topological_sort(GRAPH* graph);
+//! @param[in] order : from sink to sources (IN) or from source to sinks (OUT)
+void graph_topological_sort(GRAPH* graph, enum EDGE_TYPE order);
 
 GRAPH* graph_from_dot_file(GRAPH* graph, FILE* file);
 

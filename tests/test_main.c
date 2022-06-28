@@ -11,4 +11,5 @@ int main() {
   ctdd_run_suite(test_set);
   ctdd_run_suite(test_node);
   ctdd_run_suite(test_graph);
+  ctdd_run_suite(test_dot_parser);
 }

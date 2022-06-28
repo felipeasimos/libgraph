@@ -6,6 +6,7 @@
 #include <string.h>
 
 #define MAX_CONTENT_SIZE 1024
+#define FILE_BUFFER_SIZE 1024
 
 #define ADD_TOKEN(token_type) do {\
           scanner->tokens = realloc(scanner->tokens, sizeof(DOT_PARSER_TOKEN) * (++(scanner->num_tokens)));\
@@ -240,7 +241,8 @@ void _dot_parser_get_tokenstream_internal(const char* source, DOT_PARSER_SCANNER
 }
 
 DOT_PARSER_TOKEN* dot_parser_get_tokenstream(const char* source, unsigned long* num_tokens) {
-  DOT_PARSER_SCANNER scanner={0};
+  if(!source || !num_tokens) return NULL;
+  DOT_PARSER_SCANNER scanner;
   dot_parser_init_scanner(&scanner);
   _dot_parser_get_tokenstream_internal(source, &scanner);
   if(scanner.error) {
@@ -259,7 +261,22 @@ void dot_parser_free_tokenstream(DOT_PARSER_TOKEN* tokens, unsigned long num_tok
   free(tokens);
 }
 
-DOT_PARSER_TOKEN* dot_parser_get_tokenstream_from_file(struct FILE* file, unsigned long* num_tokens);
+DOT_PARSER_TOKEN* dot_parser_get_tokenstream_from_file(FILE* file, unsigned long* num_tokens) {
+  if(!file) return NULL;
+  char buf[FILE_BUFFER_SIZE];
+  DOT_PARSER_SCANNER scanner;
+  dot_parser_init_scanner(&scanner);
+  while(!scanner.error && fgets(buf, FILE_BUFFER_SIZE-1, file)) {
+    _dot_parser_get_tokenstream_internal(buf, &scanner);
+  }
+  if(scanner.error) {
+    dot_parser_free_tokenstream(scanner.tokens, scanner.num_tokens);
+    *num_tokens = scanner.global_cursor;
+    return NULL;
+  }
+  *num_tokens = scanner.num_tokens;
+  return scanner.tokens;
+}
 
 DOT_PARSER_AST* dot_parser_ast_from_tokenstream(DOT_PARSER_TOKEN* tokenstream, unsigned long num_tokens);
 

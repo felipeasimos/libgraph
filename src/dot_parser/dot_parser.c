@@ -8,18 +8,18 @@
 #define MAX_CONTENT_SIZE 1024
 
 #define ADD_TOKEN(token_type) do {\
-          tokens = realloc(tokens, sizeof(DOT_PARSER_TOKEN) * (++(*num_tokens)));\
-          tokens[*num_tokens-1].type = token_type;\
-          tokens[*num_tokens-1].content = NULL;\
+          scanner->tokens = realloc(scanner->tokens, sizeof(DOT_PARSER_TOKEN) * (++(scanner->num_tokens)));\
+          scanner->tokens[scanner->num_tokens-1].type = token_type;\
+          scanner->tokens[scanner->num_tokens-1].content = NULL;\
  } while(0)
 
 #define ADD_ID() do{\
-          content[content_size]='\0';\
-          tokens = realloc(tokens, sizeof(DOT_PARSER_TOKEN) * (++(*num_tokens)));\
-          tokens[*num_tokens-1].type = ID;\
-          tokens[*num_tokens-1].content = malloc(content_size+1);\
-          memcpy(tokens[*num_tokens-1].content, content, content_size+1);\
-          content_size = 0;\
+          scanner->content[scanner->content_size]='\0';\
+          scanner->tokens = realloc(scanner->tokens, sizeof(DOT_PARSER_TOKEN) * (++(scanner->num_tokens)));\
+          scanner->tokens[scanner->num_tokens-1].type = ID;\
+          scanner->tokens[scanner->num_tokens-1].content = malloc(scanner->content_size+1);\
+          memcpy(scanner->tokens[scanner->num_tokens-1].content, scanner->content, scanner->content_size+1);\
+          scanner->content_size = 0;\
 } while(0)
 
 enum DOT_PARSER_SCANNER_STATE {
@@ -34,39 +34,51 @@ enum DOT_PARSER_SCANNER_STATE {
   COMMENT_START='/'
 };
 
-DOT_PARSER_TOKEN* dot_parser_get_tokenstream(const char* source, unsigned long* num_tokens) {
+typedef struct DOT_PARSER_SCANNER {
+  enum DOT_PARSER_SCANNER_STATE state;
+  unsigned long local_cursor;
+  unsigned long global_cursor;
+  char content[MAX_CONTENT_SIZE];
+  unsigned long content_size;
+  DOT_PARSER_TOKEN* tokens;
+  unsigned long num_tokens;
+  int error;
+} DOT_PARSER_SCANNER;
 
-  *num_tokens = 0;
+void dot_parser_init_scanner(DOT_PARSER_SCANNER* scanner) {
+  memset(scanner, 0x00, sizeof(DOT_PARSER_SCANNER));
+  scanner->state = BEFORE_FIRST_CURLY_BRACKET;
+}
+
+void _dot_parser_get_tokenstream_internal(const char* source, DOT_PARSER_SCANNER* scanner) {
+
+  scanner->local_cursor = 0;
   if(!source) {
-    return NULL;
+    printf("error: no source given\n");
+    scanner->error = 1;
+    return;
   }
 
-  const char* begin = source;
-  DOT_PARSER_TOKEN* tokens = NULL;
-
-  char content[MAX_CONTENT_SIZE]={0};
-  unsigned long content_size = 0;
-  enum DOT_PARSER_SCANNER_STATE state = BEFORE_FIRST_CURLY_BRACKET;
-
   do {
-    switch(state) {
+    char c = source[scanner->local_cursor];
+    switch(scanner->state) {
       case BEFORE_FIRST_CURLY_BRACKET: {
-        if(*source == '{') {
-          state = WAITING;
+        if(c == '{') {
+          scanner->state = WAITING;
           ADD_TOKEN(OPEN_CURLY_BRACKET);
         }
         break;
       }
       case WAITING: {
-        switch(*source) {
+        switch(c) {
           case '-':
-            state = ARROW_START;
+            scanner->state = ARROW_START;
             continue;
           case '/':
-            state = COMMENT_START;
+            scanner->state = COMMENT_START;
             continue;
           case '#':
-            state = COMMENT;
+            scanner->state = COMMENT;
             continue;
           case '{':
             ADD_TOKEN(OPEN_CURLY_BRACKET);
@@ -75,7 +87,7 @@ DOT_PARSER_TOKEN* dot_parser_get_tokenstream(const char* source, unsigned long* 
             ADD_TOKEN(CLOSE_CURLY_BRACKET);
             continue;
           case '[':
-            state = OPEN_BRACKET;
+            scanner->state = OPEN_BRACKET;
             continue;
           case '\n':
           case '\t':
@@ -83,146 +95,161 @@ DOT_PARSER_TOKEN* dot_parser_get_tokenstream(const char* source, unsigned long* 
             continue;
         }
         if(
-            ('0' <= *source && *source <= '9') || // is number
-            (('a' <= *source && *source <= 'z') || ('A' <= *source && *source <= 'Z')) || // [a-zA-Z]
-            (*source == '_' || *source == '"') || // _ | "
-            (*source == '<')  // <
+            ('0' <= c && c <= '9') || // is number
+            (('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z')) || // [a-zA-Z]
+            (c == '_' || c == '"') || // _ | "
+            (c == '<')  // <
             ) {
-          state = ID_INSIDE;
-          content[content_size++] = *source;
+          scanner->state = ID_INSIDE;
+          scanner->content[scanner->content_size++] = c;
           break;
         } else {
-          *num_tokens = source - begin;
-          return NULL;
+          printf("error: invalid character in WAITING\n");
+          scanner->error = 1;
+          return;
         }
         break;
       }
       case ID_INSIDE: {
-        switch(*source) {
+        switch(c) {
           case '\t':
           case '\n':
           case ' ': {
-            state = WAITING;
+            scanner->state = WAITING;
             ADD_ID();
             continue;
           }
           case '/': {
-            state = COMMENT_START;
+            scanner->state = COMMENT_START;
             ADD_ID();
             continue;
           }
           case '#': {
-            state = COMMENT;
+            scanner->state = COMMENT;
             ADD_ID();
             continue;
           }
           case '\\': {
-            state = ESCAPE_ID;
+            scanner->state = ESCAPE_ID;
             continue;
           }
           case '-': {
-            state = ARROW_START;
+            scanner->state = ARROW_START;
             ADD_ID();
             continue;
           }
           case ':': {
-            state = PORT_START;
+            scanner->state = PORT_START;
             ADD_ID();
             continue;
           }
           case ';': {
-            state = WAITING;
+            scanner->state = WAITING;
             ADD_ID();
             continue;
           }
           case '{':
-            state = WAITING;
+            scanner->state = WAITING;
             ADD_ID();
             ADD_TOKEN(OPEN_CURLY_BRACKET);
             continue;
           case '}':
-            state = WAITING;
+            scanner->state = WAITING;
             ADD_ID();
             ADD_TOKEN(CLOSE_CURLY_BRACKET);
             continue;
         }
         if(
-            ('0' <= *source && *source <= '9') || // is number
-            (('a' <= *source && *source <= 'z') || ('A' <= *source && *source <= 'Z')) || // [a-zA-Z]
-            (*source == '_' || *source == '"') || // _ | "
-            (*source == '<')  // <
+            ('0' <= c && c <= '9') || // is number
+            (('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z')) || // [a-zA-Z]
+            (c == '_' || c == '"') || // _ | "
+            (c == '<')  // <
             ) {
-          content[content_size++] = *source;
+          scanner->content[scanner->content_size++] = c;
           continue;
         }
         break;
       }
       case ARROW_START: {
-        switch(*source) {
+        switch(c) {
           case '-': {
-            state = WAITING;
+            scanner->state = WAITING;
             ADD_TOKEN(LINK);
             break;
           }
           case '>': {
-            state = WAITING;
+            scanner->state = WAITING;
             ADD_TOKEN(ARROW);
             break;
           }
           default: {
-            *num_tokens = source - begin;
-            return NULL;
+            printf("error: invalid character in ARROW\n");
+            scanner->error = 1;
+            return;
           }
         }
         break;
       }
       case OPEN_BRACKET: {
-        if(*source == ']') {
-          state = WAITING;
+        if(c == ']') {
+          scanner->state = WAITING;
         }
         break;
       }
       case ESCAPE_ID: {
-        content[content_size++] = *source;
-        state = ID_INSIDE;
+        scanner->content[scanner->content_size++] = c;
+        scanner->state = ID_INSIDE;
         break;
       }
       case PORT_START: {
-        switch(*source) {
+        switch(c) {
           case ' ':
           case '\n':
           case '\t': {
-            state = WAITING;
+            scanner->state = WAITING;
             break;
           }
         }
         if(
-            !(('a' <= *source && *source <= 'z') || ('A' <= *source && *source <= 'Z')) // [a-zA-Z]
+            !(('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z')) // [a-zA-Z]
             ) {
-          state = WAITING;
-          source--;
+          scanner->state = WAITING;
+          scanner->local_cursor--;
+          scanner->global_cursor--;
         }
         break;
       }
       case COMMENT: {
-        if(*source == '\n') {
-          state = WAITING;
+        if(c == '\n') {
+          scanner->state = WAITING;
         }
         break;
       }
       case COMMENT_START: {
-        if(*source == '/') {
-          state = COMMENT;
+        if(c == '/') {
+          scanner->state = COMMENT;
           continue;
         } else {
-          *num_tokens = source - begin;
-          return NULL;
+          scanner->error = 1;
+          return;
         }
       }
     }
-  } while(*(++source));
+    scanner->global_cursor++;
+  } while(source[++scanner->local_cursor]);
+}
 
-  return tokens;
+DOT_PARSER_TOKEN* dot_parser_get_tokenstream(const char* source, unsigned long* num_tokens) {
+  DOT_PARSER_SCANNER scanner={0};
+  dot_parser_init_scanner(&scanner);
+  _dot_parser_get_tokenstream_internal(source, &scanner);
+  if(scanner.error) {
+    dot_parser_free_tokenstream(scanner.tokens, scanner.num_tokens);
+    *num_tokens = scanner.global_cursor;
+    return NULL;
+  }
+  *num_tokens = scanner.num_tokens;
+  return scanner.tokens;
 }
 
 void dot_parser_free_tokenstream(DOT_PARSER_TOKEN* tokens, unsigned long num_tokens) {

@@ -6,6 +6,7 @@
 ctdd_test(test_dot_parser_get_tokenstream) {
   unsigned long num_tokens = 0;
   DOT_PARSER_TOKEN* tokens = dot_parser_get_tokenstream("sdfsd { a ->b;\n a-- {b2 ca23->3fa;df:asdf->{a b}}->}", &num_tokens);
+  // DOT_PARSER_TOKEN* tokens = dot_parser_get_tokenstream("sdfsd { ", &num_tokens);
   ctdd_check(tokens);
   DOT_PARSER_TOKEN correct_tokens[] = {
     { .content = NULL, .type = OPEN_CURLY_BRACKET},

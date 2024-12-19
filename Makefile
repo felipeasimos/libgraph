@@ -73,7 +73,7 @@ TESTS_HEADERS_LOCATION :=./tests
 FLAGS := -pedantic-errors -Wall -Wextra -fPIC -Werror
 DEBUG_FLAGS :=-DDEBUG -O0 -g
 RELEASE_FLAGS :=-O3 -DNDEBUG
-TESTS_FLAGS :=--coverage
+TESTS_FLAGS :=--coverage -Wno-unused-function -Wno-strict-prototypes
 
 # ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^
 # compilation variables to be set per project

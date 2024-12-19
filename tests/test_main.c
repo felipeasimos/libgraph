@@ -2,7 +2,7 @@
 #include <time.h>
 #include <stdlib.h>
 
-int main() {
+int main(void) {
 
   srand(time(NULL));
   ctdd_run_suite(test_data_format);
